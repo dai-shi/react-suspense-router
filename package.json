@@ -18,7 +18,7 @@
     "dist"
   ],
   "scripts": {
-    "compile": "microbundle build --format cjs,es,umd",
+    "compile": "microbundle build --format cjs,es,umd --jsx React.createElement",
     "test": "npm run eslint && npm run tsc-test && npm run jest",
     "eslint": "eslint --ext .js,.ts,.tsx --ignore-pattern dist .",
     "jest": "jest",
