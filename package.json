@@ -1,0 +1,77 @@
+{
+  "name": "react-suspense-router",
+  "description": "React Router for React Suspense and Render-as-You-Fetch",
+  "version": "0.1.0",
+  "author": "Daishi Kato",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dai-shi/react-suspense-router.git"
+  },
+  "source": "./src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.esm.js",
+  "browser": "./dist/index.umd.js",
+  "types": "./dist/src/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "compile": "microbundle build --format cjs,es,umd",
+    "test": "npm run eslint && npm run tsc-test && npm run jest",
+    "eslint": "eslint --ext .js,.ts,.tsx --ignore-pattern dist .",
+    "jest": "jest",
+    "tsc-test": "tsc --project . --noEmit",
+    "apidoc": "documentation readme --section API --markdown-toc false --parse-extension ts src/index.ts",
+    "examples:01_minimal": "DIR=01_minimal EXT=js webpack-dev-server",
+    "examples:02_typescript": "DIR=02_typescript webpack-dev-server"
+  },
+  "keywords": [
+    "react",
+    "suspense",
+    "concurrent",
+    "router"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "history": "^4.10.1",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
+    "react-suspense-fetch": "^0.1.1",
+    "react-tracked": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/history": "^4.7.4",
+    "@types/jest": "^25.1.0",
+    "@types/react": "^16.9.19",
+    "@types/react-dom": "^16.9.5",
+    "@types/react-router": "^5.1.4",
+    "@types/react-router-dom": "^5.1.3",
+    "@typescript-eslint/eslint-plugin": "^2.18.0",
+    "@typescript-eslint/parser": "^2.18.0",
+    "babel-loader": "^8.0.6",
+    "core-js": "^3.6.4",
+    "documentation": "^12.1.4",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.18.0",
+    "eslint-plugin-react-hooks": "^2.3.0",
+    "html-webpack-plugin": "^3.2.0",
+    "jest": "^25.1.0",
+    "microbundle": "^0.12.0-next.8",
+    "react": "experimental",
+    "react-dom": "experimental",
+    "ts-jest": "^25.0.0",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1"
+  },
+  "peerDependencies": {
+    "react": "experimental"
+  }
+}
