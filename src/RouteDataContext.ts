@@ -1,10 +1,10 @@
 import { createContainer } from 'react-tracked';
 
-const passDataProp = ({ data }: { data: object } = { data: {} }) => [
+const passDataProp = ({ data }: { data: object | null } = { data: null }) => [
   // Because Suspendable by react-suspense-fetch is a mutable object,
   // we need to expand it here. Othrewise, state usage tracking
   // by react-tracked doesn't work.
-  { ...data },
+  data && { ...data },
   null, // we don't use useUpdate
 ] as const;
 

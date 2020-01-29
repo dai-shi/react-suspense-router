@@ -42,26 +42,38 @@ const removeCircular = () => {
   };
 };
 
+type FetchData = (m: Match) => object;
+
+// we somehow need global cache
+// HACK it there any better way???
+const getInitialRouteData = (
+  history: History,
+  fetchData: FetchData,
+  props: RouteProps & { computedMatch?: Match },
+) => {
+  const match = props.computedMatch || matchPath(history.location.pathname, props);
+  const initializedMap = getInitializedMap(history);
+  const key = JSON.stringify(props, removeCircular()); // HACK
+  if (!initializedMap.has(key)) {
+    initializedMap.set(
+      key,
+      match ? fetchData(match) : null,
+    );
+    // FIXME no cleanup
+  }
+  return initializedMap.get(key) as object | null;
+};
+
 type Props = RouteProps & {
-  fetchData?: (m: Match) => object;
+  fetchData?: FetchData;
 };
 
 export const Route: React.FC<Props> = ({ fetchData, ...props }) => {
   const history = useHistory();
-  const [routeData, setRouteData] = useState<object>(() => {
-    const match = matchPath(history.location.pathname, props);
-    const initializedMap = getInitializedMap(history);
-    const key = JSON.stringify(props, removeCircular()); // HACK
-    // HACK it there any better way???
-    if (!initializedMap.has(key)) {
-      initializedMap.set(
-        key,
-        match && fetchData ? fetchData(match) : null,
-      );
-      // FIXME no cleanup
-    }
-    return initializedMap.get(key);
-  });
+  const [routeDataState, setRouteData] = useState<object | null>(null);
+  const routeData = (fetchData && routeDataState === null
+    ? getInitialRouteData(history, fetchData, props)
+    : routeDataState);
   useEffect(() => {
     const unlisten = history.listen((location: Location) => {
       const match = matchPath(location.pathname, props);

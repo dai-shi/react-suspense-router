@@ -25,7 +25,8 @@
     "tsc-test": "tsc --project . --noEmit",
     "apidoc": "documentation readme --section API --markdown-toc false --parse-extension ts src/index.ts",
     "examples:01_minimal": "DIR=01_minimal EXT=js webpack-dev-server",
-    "examples:02_typescript": "DIR=02_typescript webpack-dev-server"
+    "examples:02_typescript": "DIR=02_typescript webpack-dev-server",
+    "examples:03_nesting": "DIR=03_nesting webpack-dev-server"
   },
   "keywords": [
     "react",

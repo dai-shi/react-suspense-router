@@ -4,7 +4,7 @@ export {
   Redirect,
   Router,
   StaticRouter, // TODO?
-  Switch, // TODO
+  Switch,
   generatePath,
   matchPath,
   withRouter,
