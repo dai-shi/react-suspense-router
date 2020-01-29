@@ -1,6 +1,5 @@
 export { MemoryRouter, Prompt, Redirect, Router, StaticRouter, // TODO?
-Switch, // TODO
-generatePath, matchPath, withRouter, useHistory, useLocation, useParams, useRouteMatch, match, } from 'react-router';
+Switch, generatePath, matchPath, withRouter, useHistory, useLocation, useParams, useRouteMatch, match, } from 'react-router';
 export { HashRouter, // TODO
 Link, NavLink, } from 'react-router-dom';
 /**
