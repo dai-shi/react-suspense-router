@@ -2,11 +2,11 @@ import { match as Match } from 'react-router';
 import { prepare, run, prefetch } from 'react-suspense-fetch';
 
 export const LazyFetcher = <T extends object, P>(
-  factory: () => Promise<{ default: (m: Match<P>) => T }>,
+  factory: () => Promise<{ default: (m: Match<P>) => Promise<T> }>,
 ) => {
   const preparedFetcher = prepare(factory);
   const invokeFetcher = async (
-    [fetcher, match]: readonly [(m: Match<P>) => T, Match<P>],
+    [fetcher, match]: readonly [(m: Match<P>) => Promise<T>, Match<P>],
   ) => fetcher(match);
   return (match: Match<P>) => {
     run(preparedFetcher, null);
