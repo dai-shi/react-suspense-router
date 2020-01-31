@@ -10,7 +10,8 @@ React Router for React Suspense and Render-as-You-Fetch
 
 The new [Render-as-You-Fetch](https://reactjs.org/docs/concurrent-mode-suspense.html#approach-3-render-as-you-fetch-using-suspense) pattern is mind-blowing.
 
-This is an experimental project that combines react-router and some other libraries.
+This is an experimental library that combines react-router and some other libraries.
+You can get the benefit of Render-as-You-Fetch out of the box.
 
 ## Install
 
