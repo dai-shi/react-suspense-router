@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import { useRouteData } from 'react-suspense-router';
 
@@ -19,7 +19,9 @@ const Post: React.FC = React.memo(() => (
   <div>
     <h1>Post</h1>
     <div>random={Math.random()}</div>
-    <PostContent />
+    <Suspense fallback={<div>Fetching content...</div>}>
+      <PostContent />
+    </Suspense>
   </div>
 ));
 
