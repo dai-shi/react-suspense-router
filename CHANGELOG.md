@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Fix a bug that prevented Render-as-You-Fetch
 
 ## [0.3.0] - 2020-02-01
 ### Changed
