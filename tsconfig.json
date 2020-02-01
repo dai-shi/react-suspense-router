@@ -13,5 +13,6 @@
     "paths": {
       "react-suspense-router": ["./src"]
     }
-  }
+  },
+  "exclude": ["./dist"]
 }
