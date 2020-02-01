@@ -75,6 +75,7 @@ export const Route: React.FC<Props> = ({ fetchData, ...props }) => {
     ? getInitialRouteData(history, fetchData, props)
     : routeDataState);
   useEffect(() => {
+    // BUG it doesn't work properly with <Switch>
     const unlisten = history.listen((location: Location) => {
       const match = matchPath(location.pathname, props);
       if (match && fetchData) {
