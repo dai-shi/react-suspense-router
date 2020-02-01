@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Update react-router v6-alpha and completely rewritten
 
 ## [0.2.0] - 2020-01-30
 ### Added

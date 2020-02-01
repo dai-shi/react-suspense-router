@@ -2,70 +2,56 @@
 /// <reference types="react/experimental" />
 
 import React, {
-  SuspenseConfig,
   TransitionStartFunction,
   useRef,
   useTransition,
 } from 'react';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
 import { Router } from 'react-router';
-import { BrowserRouterProps } from 'react-router-dom';
-import {
-  createBrowserHistory as createBrowserHistoryOrig,
-  BrowserHistoryBuildOptions,
-  History,
-  Location,
-  Action,
-} from 'history';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+import { createBrowserHistory } from 'history';
 
+import { History, HistoryEvent } from './types';
+import { HistoryProvider } from './HistoryContext';
 import { SuspensePendingProvider } from './SuspensePendingContext';
 
-type Options = BrowserHistoryBuildOptions & {
-  startTransiton: TransitionStartFunction;
+type Props = {
+  timeout?: number;
+  window?: unknown;
 };
 
-const createBrowserHistory = (options?: Options) => {
-  const history = createBrowserHistoryOrig(options);
-  const { startTransiton } = options || {};
-  if (startTransiton) {
-    const savedListen = history.listen;
-    history.listen = (listener: History.LocationListener<History.PoorMansUnknown>) => {
-      const unlisten = savedListen((
-        location: Location<History.PoorMansUnknown>,
-        action: Action,
-      ) => {
-        startTransiton(() => {
-          listener(location, action);
-        });
+const wrapHistory = (startTransiton: TransitionStartFunction) => (history: History) => {
+  const listen = (listener: (e: HistoryEvent) => void) => {
+    const unlisten = history.listen((e: HistoryEvent) => {
+      startTransiton(() => {
+        listener(e);
       });
-      return unlisten;
-    };
-  }
-  return history;
-};
-
-type Props = BrowserRouterProps & {
-  suspenseConfig?: SuspenseConfig;
+    });
+    return unlisten;
+  };
+  return { ...history, listen };
 };
 
 export const BrowserRouter: React.FC<Props> = ({
-  suspenseConfig,
+  timeout,
+  window,
   children,
-  ...props
 }) => {
-  const [startTransiton, isPending] = useTransition(suspenseConfig);
+  const [startTransiton, isPending] = useTransition(timeout ? { timeoutMs: timeout } : null);
   const history = useRef<History>();
   if (!history.current) {
-    history.current = createBrowserHistory({
-      ...props,
-      startTransiton,
-    });
+    history.current = wrapHistory(startTransiton)(createBrowserHistory({ window }));
   }
   return (
-    <SuspensePendingProvider suspensePending={isPending}>
-      <Router history={history.current}>
-        {children}
-      </Router>
-    </SuspensePendingProvider>
+    <HistoryProvider history={history.current}>
+      <SuspensePendingProvider suspensePending={isPending}>
+        <Router history={history.current} timeout={timeout}>
+          {children}
+        </Router>
+      </SuspensePendingProvider>
+    </HistoryProvider>
   );
 };
 

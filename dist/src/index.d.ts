@@ -1,25 +1,47 @@
-export { MemoryRouter, Prompt, Redirect, Router, StaticRouter, // TODO?
-Switch, generatePath, matchPath, withRouter, useHistory, useLocation, useParams, useRouteMatch, match, } from 'react-router';
+export { MemoryRouter, // TODO
+Navigate, Outlet, Redirect, Route, Router, createRoutesFromChildren, generatePath, matchRoutes, resolveLocation, useBlocker, useHref, useLocation, useMatch, useNavigate, useOutlet, useParams, useResolvedLocation, } from 'react-router';
 export { HashRouter, // TODO
-Link, NavLink, } from 'react-router-dom';
+Link, NavLink, Prompt, usePrompt, } from 'react-router-dom';
 /**
- * BrowserRouter for Suspsense
+ * BrowserRouter for Suspsense Render-as-You-Fetch
  *
- * This accepts `suspenseConfig` prop for useTransition.
+ * Its usage is the same with react-router.
  *
  * @example
  * import { BrowserRouter } from 'react-suspense-router';
  *
  * const App = () => (
- *   <BrowserRouter suspenseConfig={{ timeoutMs: 3000 }}>
+ *   <BrowserRouter timeoutMs={3000}>
  *     <Nav />
  *     <Suspense fallback={<span>Loading...</span>}>
- *       <Routes />
+ *       <MyRoutes />
  *     </Suspense>
  *   </BrowserRouter>
  * );
  */
 export { BrowserRouter } from './BrowserRouter';
+/**
+ * useRoutes for Suspense Render-as-You-Fetch
+ *
+ * Its usage is the same with react-router.
+ */
+export { useRoutes } from './Routes';
+/**
+ * Routes for Suspense Render-as-You-Fetch
+ *
+ * Its usage is the same with react-router.
+ *
+ * @example
+ * import { Routes, Route } from 'react-suspense-router';
+ *
+ * const MyRoutes = () => (
+ *   <Routes>
+ *     <Route path="/" element={<Index />} />
+ *     <Route path="/double/:number" element={<Double />} fetchData={fetchDouble} />
+ *   </Routes>
+ * );
+ */
+export { Routes } from './Routes';
 /**
  * LazyFetcher
  *
@@ -31,27 +53,6 @@ export { BrowserRouter } from './BrowserRouter';
  * const fetchUserData = LazyFetcher(() => import('./pages/User.data'));
  */
 export { LazyFetcher } from './LazyFetcher';
-/**
- * Route for Suspense
- *
- * This accepts `fetchData` prop for route data.
- * It is usaually loaded by `LazyFetcher`.
- *
- * @example
- * import { Route } from 'react-suspense-router';
- *
- * const Routes = () => (
- *   <>
- *     <Route exact path="/">
- *       <Index />
- *     </Route>
- *     <Route exact path="/user/:uid" fetchData={fetchUserData}>
- *       <User />
- *     </Route>
- *   </>
- * );
- */
-export { Route } from './Route';
 /**
  * useRouteData hook
  *
@@ -103,3 +104,4 @@ export { useRouteDataSelector } from './RouteDataContext';
  * };
  */
 export { useSuspensePending } from './SuspensePendingContext';
+export { match } from './types';

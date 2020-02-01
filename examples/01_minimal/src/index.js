@@ -5,6 +5,7 @@ import { prefetch } from 'react-suspense-fetch';
 
 import {
   BrowserRouter,
+  Routes,
   Route,
   Link,
   useParams,
@@ -36,15 +37,11 @@ const Index = () => (
   </div>
 );
 
-const Routes = () => (
-  <>
-    <Route exact path="/">
-      <Index />
-    </Route>
-    <Route exact path="/double/:number" fetchData={fetchDouble}>
-      <Double />
-    </Route>
-  </>
+const MyRoutes = () => (
+  <Routes>
+    <Route path="/" element={<Index />} />
+    <Route path="/double/:number" element={<Double />} fetchData={fetchDouble} />
+  </Routes>
 );
 
 const Nav = () => {
@@ -68,10 +65,10 @@ const Nav = () => {
 };
 
 const App = () => (
-  <BrowserRouter suspenseConfig={{ timeoutMs: 3000 }}>
+  <BrowserRouter timeout={3000}>
     <Nav />
     <Suspense fallback={<span>Loading...</span>}>
-      <Routes />
+      <MyRoutes />
     </Suspense>
   </BrowserRouter>
 );

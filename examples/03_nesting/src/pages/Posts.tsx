@@ -1,9 +1,8 @@
 import React from 'react';
 
 import {
-  useRouteMatch,
   Link,
-  Switch,
+  Routes,
   Route,
   LazyFetcher,
 } from 'react-suspense-router';
@@ -11,33 +10,26 @@ import {
 const Post = React.lazy(() => import('./Post'));
 const fetchPostData = LazyFetcher(() => import('./Post.data'));
 
-const About: React.FC = () => {
-  const { path, url } = useRouteMatch();
-  return (
-    <div>
-      <h1>Posts</h1>
-      <ul>
-        <li>
-          <Link to={`${url}/1`}>Post 1</Link>
-        </li>
-        <li>
-          <Link to={`${url}/2`}>Post 2</Link>
-        </li>
-        <li>
-          <Link to={`${url}/3`}>Post 3</Link>
-        </li>
-      </ul>
+const About: React.FC = () => (
+  <div>
+    <h1>Posts</h1>
+    <ul>
+      <li>
+        <Link to="1">Post 1</Link>
+      </li>
+      <li>
+        <Link to="2">Post 2</Link>
+      </li>
+      <li>
+        <Link to="3">Post 3</Link>
+      </li>
+    </ul>
 
-      <Switch>
-        <Route exact path={path}>
-          <h3>Please select a post.</h3>
-        </Route>
-        <Route path={`${path}/:postId`} fetchData={fetchPostData}>
-          <Post />
-        </Route>
-      </Switch>
-    </div>
-  );
-};
+    <Routes>
+      <Route path=":postId" element={<Post />} fetchData={fetchPostData} />
+      <Route element={<h3>Please select a post.</h3>} />
+    </Routes>
+  </div>
+);
 
 export default About;

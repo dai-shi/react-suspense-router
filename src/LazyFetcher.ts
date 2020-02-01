@@ -1,5 +1,6 @@
-import { match as Match } from 'react-router';
 import { prepare, run, prefetch } from 'react-suspense-fetch';
+
+import { match as Match } from './types';
 
 export const LazyFetcher = <T extends object, P>(
   factory: () => Promise<{ default: (m: Match<P>) => Promise<T> }>,

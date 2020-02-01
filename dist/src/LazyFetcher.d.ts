@@ -1,4 +1,4 @@
-import { match as Match } from 'react-router';
+import { match as Match } from './types';
 export declare const LazyFetcher: <T extends object, P>(factory: () => Promise<{
     default: (m: Match<P>) => Promise<T>;
 }>) => (match: Match<P>) => import("react-suspense-fetch").Suspendable<T, readonly [import("react-suspense-fetch").Suspendable<{
