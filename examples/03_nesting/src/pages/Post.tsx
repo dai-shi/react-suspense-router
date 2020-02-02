@@ -15,7 +15,7 @@ const PostContent: React.FC = () => {
   );
 };
 
-const Post: React.FC = React.memo(() => (
+const Post: React.FC = () => (
   <div>
     <h1>Post</h1>
     <div>random={Math.random()}</div>
@@ -23,6 +23,6 @@ const Post: React.FC = React.memo(() => (
       <PostContent />
     </Suspense>
   </div>
-));
+);
 
 export default Post;

@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+###
+- Improve the implementation around initializedMap
 
 ## [0.4.0] - 2020-02-01
 ### Changed

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import { matchRoutes } from 'react-router';
@@ -8,11 +8,10 @@ import { match as Match, History, HistoryEvent } from './types';
 
 const INITIALIZED_MAP = Symbol('INITIALIZED_MAP');
 
-// HACK
-const getInitializedMap = (history: History) => {
+// HACK we mutate history for global cache
+const getInitializedMap = <Key extends unknown, Value>(history: History) => {
   const hackedHistory = history as {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [INITIALIZED_MAP]?: Map<any, any>;
+    [INITIALIZED_MAP]?: Map<Key, Value>;
   };
   let initializedMap = hackedHistory[INITIALIZED_MAP];
   if (!initializedMap) {
@@ -24,8 +23,6 @@ const getInitializedMap = (history: History) => {
 
 type FetchData = (m: Match) => object;
 
-// we somehow need global cache
-// HACK it there any better way???
 const getInitialRouteData = (
   history: History,
   fetchData: FetchData,
@@ -34,21 +31,33 @@ const getInitialRouteData = (
   caseSensitive: boolean,
   match: Match,
 ) => {
-  const initializedMap = getInitializedMap(history);
+  type Item = {
+    data: object;
+    commit: () => void;
+    cleanup: () => void;
+  };
+  const initializedMap = getInitializedMap<string, Item>(history);
   const key = JSON.stringify({
     path,
     basename,
     caseSensitive,
     match,
-  }); // HACK
+  }); // HACK we need a consistent key in concurrent mode
   if (!initializedMap.has(key)) {
-    initializedMap.set(
-      key,
-      match ? fetchData(match) : null,
-    );
-    // FIXME no cleanup
+    const data = fetchData(match);
+    const timer = setTimeout(() => {
+      initializedMap.delete(key);
+    }, 30 * 1000); // HACK 30 sec cleanup timeout
+    const commit = () => {
+      clearTimeout(timer);
+    };
+    const cleanup = () => {
+      initializedMap.delete(key);
+      clearTimeout(timer);
+    };
+    initializedMap.set(key, { data, commit, cleanup });
   }
-  return initializedMap.get(key) as object | null;
+  return initializedMap.get(key) as Item;
 };
 
 type Props = {
@@ -69,17 +78,26 @@ export const RouteWrapper: React.FC<Props> = ({
   match,
   children,
 }) => {
-  const [routeDataState, setRouteData] = useState<object | null>(null);
-  const routeData = (routeDataState === null ? getInitialRouteData(
-    history,
-    fetchData,
-    routePath,
-    basename,
-    caseSensitive,
-    match,
-  ) : routeDataState);
+  const [routeData, setRouteData] = useState<object | null>(null);
+  const commit = useRef<() => void>();
+  const cleanup = useRef<() => void>();
+  let routeDataToProvide = routeData;
+  if (routeDataToProvide === null) {
+    const item = getInitialRouteData(
+      history,
+      fetchData,
+      routePath,
+      basename,
+      caseSensitive,
+      match,
+    );
+    routeDataToProvide = item.data;
+    commit.current = item.commit;
+    cleanup.current = item.cleanup;
+  }
   useEffect(() => {
     const unlisten = history.listen(({ location }: HistoryEvent) => {
+      if (commit.current) commit.current();
       const matches = matchRoutes([{ path: routePath }], location, basename, caseSensitive);
       if (matches && matches.length) {
         // TODO we do not have parentParams here
@@ -91,10 +109,13 @@ export const RouteWrapper: React.FC<Props> = ({
       }
     });
     // FIXME route could be change before this effect is handled?
-    return unlisten;
+    return () => {
+      if (cleanup.current) cleanup.current();
+      unlisten();
+    };
   }, [history, routePath, basename, caseSensitive, fetchData]);
   return (
-    <RouteDataProvider data={routeData}>
+    <RouteDataProvider data={routeDataToProvide}>
       {children}
     </RouteDataProvider>
   );
