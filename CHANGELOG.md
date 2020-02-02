@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.4.0] - 2020-02-01
 ### Changed
 - Update react-tracked and make the implementation less tricky
 
