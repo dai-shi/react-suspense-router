@@ -1,16 +1,29 @@
+/* eslint camelcase: off */
+/* eslint @typescript-eslint/camelcase: off */
+
 import { createContainer } from 'react-tracked';
 
 const passDataProp = ({ data }: { data: object | null }) => [
-  // Because Suspendable by react-suspense-fetch is a mutable object,
-  // we need to wrap it here. Othrewise, state usage tracking
-  // by react-tracked doesn't work.
-  // XXX we now have triple Proxies. It should be improved.
-  data && new Proxy(data, {}),
+  data,
   null, // we don't use useUpdate
 ] as const;
 
-export const {
-  Provider: RouteDataProvider,
-  useTrackedState: useRouteData,
-  useSelector: useRouteDataSelector,
+const {
+  Provider,
+  useTrackedState,
+  useSelector,
 } = createContainer(passDataProp);
+
+export const RouteDataProvider = Provider;
+
+type UseTrackedState = <State>(opts: {
+  unstable_ignoreStateEquality?: boolean;
+}) => State;
+
+export const useRouteData = () => (useTrackedState as UseTrackedState)({
+  // Because Suspendable by react-suspense-fetch is a mutable object,
+  // we need this special mode to handle it.
+  unstable_ignoreStateEquality: true,
+});
+
+export const useRouteDataSelector = useSelector;
