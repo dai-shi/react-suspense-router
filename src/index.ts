@@ -40,7 +40,7 @@ export {
  * import { BrowserRouter } from 'react-suspense-router';
  *
  * const App = () => (
- *   <BrowserRouter timeoutMs={3000}>
+ *   <BrowserRouter timeout={3000}>
  *     <Nav />
  *     <Suspense fallback={<span>Loading...</span>}>
  *       <MyRoutes />
