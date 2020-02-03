@@ -1,7 +1,7 @@
 {
   "name": "react-suspense-router",
   "description": "React Router for React Suspense and Render-as-You-Fetch",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "author": "Daishi Kato",
   "repository": {
     "type": "git",
