@@ -78,11 +78,9 @@ export const RouteWrapper: React.FC<Props> = ({
   match,
   children,
 }) => {
-  const [routeData, setRouteData] = useState<object | null>(null);
   const commit = useRef<() => void>();
   const cleanup = useRef<() => void>();
-  let routeDataToProvide = routeData;
-  if (routeDataToProvide === null) {
+  const [routeData, setRouteData] = useState<object>(() => {
     const item = getInitialRouteData(
       history,
       fetchData,
@@ -91,10 +89,10 @@ export const RouteWrapper: React.FC<Props> = ({
       caseSensitive,
       match,
     );
-    routeDataToProvide = item.data;
     commit.current = item.commit;
     cleanup.current = item.cleanup;
-  }
+    return item.data;
+  });
   useEffect(() => {
     const unlisten = history.listen(({ location }: HistoryEvent) => {
       if (commit.current) commit.current();
@@ -106,6 +104,7 @@ export const RouteWrapper: React.FC<Props> = ({
           pathname: matches[0].pathname,
         };
         setRouteData(fetchData(m));
+        if (cleanup.current) cleanup.current();
       }
     });
     // FIXME route could be change before this effect is handled?
@@ -115,7 +114,7 @@ export const RouteWrapper: React.FC<Props> = ({
     };
   }, [history, routePath, basename, caseSensitive, fetchData]);
   return (
-    <RouteDataProvider data={routeDataToProvide}>
+    <RouteDataProvider data={routeData}>
       {children}
     </RouteDataProvider>
   );

@@ -3,7 +3,7 @@
 
 import { createContainer } from 'react-tracked';
 
-const passDataProp = ({ data }: { data: object | null }) => [
+const passDataProp = ({ data }: { data: object }) => [
   data,
   null, // we don't use useUpdate
 ] as const;
