@@ -40,7 +40,7 @@
     "react-router": "^6.0.0-alpha.1",
     "react-router-dom": "^6.0.0-alpha.1",
     "react-suspense-fetch": "^0.1.1",
-    "react-tracked": "^1.0.4"
+    "react-tracked": "^1.0.5"
   },
   "devDependencies": {
     "@types/jest": "^25.1.0",
