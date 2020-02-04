@@ -107,7 +107,7 @@ export const RouteWrapper: React.FC<Props> = ({
         if (cleanup.current) cleanup.current();
       }
     });
-    // FIXME route could be change before this effect is handled?
+    // FIXME route could be changed before this effect is handled?
     return () => {
       if (cleanup.current) cleanup.current();
       unlisten();

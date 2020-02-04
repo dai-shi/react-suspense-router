@@ -48,6 +48,7 @@ export const useRoutes = (
     if (!fetchData) return;
     const params = { ...parentParams, ...match.params };
     const element = createElement(RouteWrapper, {
+      key: route.path, // to make sure re-mounting for different routes (any other better way?)
       history,
       routePath: route.path,
       basename,

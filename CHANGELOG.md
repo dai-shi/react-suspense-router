@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.5.1] - 2020-02-04
+### Changed
+- Fix routeData kept in different routes.
+
 ## [0.5.0] - 2020-02-04
 ### Changed
 - Improve the implementation around initializedMap
