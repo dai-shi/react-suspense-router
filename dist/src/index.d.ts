@@ -29,7 +29,9 @@ export { useRoutes } from './Routes';
 /**
  * Routes for Suspense Render-as-You-Fetch
  *
- * Its usage is the same with react-router.
+ * Its usage is the same with react-router,
+ * except that Route accepts `fetchData` prop.
+ * Specify a result created by LazyFetcher.
  *
  * @example
  * import { Routes, Route } from 'react-suspense-router';
