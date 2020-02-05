@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.0] - 2020-02-05
 ### Changed
 - Improve the implementation of useRoutes without hacks
 
