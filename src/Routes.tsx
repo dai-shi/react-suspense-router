@@ -1,11 +1,6 @@
 /* eslint react/no-children-prop: off */
 
-import React, {
-  useEffect,
-  useState,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   useParams,
   useResolvedLocation,
@@ -46,13 +41,28 @@ export const useRoutes = (
 
   const [routeDataMap, setRouteDataMap] = useState<{ [path: string]: object }>({});
 
+  const ref = useRef<{
+    routesOrig: Route[];
+    basename: string;
+    caseSensitive: boolean;
+    parentParams: { [key: string]: string };
+  }>();
+  useEffect(() => {
+    ref.current = {
+      routesOrig,
+      basename,
+      caseSensitive,
+      parentParams,
+    };
+  });
+
   useEffect(() => {
     const callback = ({ location }: HistoryEvent) => {
       const matches = matchRoutes(
-        routesOrig,
+        ref.current?.routesOrig,
         location,
-        basename,
-        caseSensitive,
+        ref.current?.basename,
+        ref.current?.caseSensitive,
       );
       (matches || []).forEach((match: Match & { route?: Route }) => {
         const { params, pathname, route } = match;
@@ -60,7 +70,7 @@ export const useRoutes = (
         const { fetchData } = route.element.props;
         if (!fetchData) return;
         const m: Match = {
-          params: { ...parentParams, ...params },
+          params: { ...ref.current?.parentParams, ...params },
           pathname,
         };
         const routeData = fetchData(m);
@@ -70,7 +80,7 @@ export const useRoutes = (
     const unlisten = history.listen(callback);
     callback({ location: initialLocation.current });
     return unlisten;
-  }, [history, routesOrig, basename, caseSensitive, parentParams]);
+  }, [history]);
 
   const routes = routesOrig.map((route) => {
     if (!hasRouteElement(route)) return route;
@@ -98,9 +108,6 @@ export const Routes: React.FC<Props> = ({
   caseSensitive = false,
   children,
 }) => {
-  const routes = useMemo(
-    () => createRoutesFromChildren(children),
-    [children],
-  );
+  const routes = createRoutesFromChildren(children);
   return useRoutes(routes, basename, caseSensitive);
 };

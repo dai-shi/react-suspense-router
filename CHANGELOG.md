@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Do not rely on routes object identity instead useRef
 
 ## [0.6.0] - 2020-02-05
 ### Changed
@@ -8,7 +10,7 @@
 
 ## [0.5.1] - 2020-02-04
 ### Changed
-- Fix routeData kept in different routes.
+- Fix routeData kept in different routes
 
 ## [0.5.0] - 2020-02-04
 ### Changed
