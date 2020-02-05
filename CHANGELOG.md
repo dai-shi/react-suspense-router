@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.0] - 2020-02-06
 ### Changed
 - Do not rely on routes object identity instead useRef
 
