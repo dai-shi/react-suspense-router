@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.8.0] - 2020-02-06
 ### Added
 - Support HashRouter and MemoryRouter
 
