@@ -1,11 +1,29 @@
-export { MemoryRouter, // TODO
-Navigate, Outlet, Redirect, Route, Router, createRoutesFromChildren, generatePath, matchRoutes, resolveLocation, useBlocker, useHref, useLocation, useMatch, useNavigate, useOutlet, useParams, useResolvedLocation, } from 'react-router';
-export { HashRouter, // TODO
-Link, NavLink, Prompt, usePrompt, } from 'react-router-dom';
+export { Navigate, Outlet, Redirect, Route, createRoutesFromChildren, generatePath, matchRoutes, resolveLocation, useBlocker, useHref, useLocation, useMatch, useNavigate, useOutlet, useParams, useResolvedLocation, } from 'react-router';
+export { Link, NavLink, Prompt, usePrompt, } from 'react-router-dom';
+/**
+ * Router for Suspsense Render-as-You-Fetch
+ *
+ * Its usage is the same with react-router.
+ *
+ * @example
+ * import { Router } from 'react-suspense-router';
+ *
+ * const history = ...;
+ * const App = () => (
+ *   <Router history={history} timeout={3000}>
+ *     <Nav />
+ *     <Suspense fallback={<span>Loading...</span>}>
+ *       <MyRoutes />
+ *     </Suspense>
+ *   </Router>
+ * );
+ */
+export { Router } from './Router';
+export { MemoryRouter } from './MemoryRouter';
 /**
  * BrowserRouter for Suspsense Render-as-You-Fetch
  *
- * Its usage is the same with react-router.
+ * Its usage is the same with react-router-dom.
  *
  * @example
  * import { BrowserRouter } from 'react-suspense-router';
@@ -20,6 +38,7 @@ Link, NavLink, Prompt, usePrompt, } from 'react-router-dom';
  * );
  */
 export { BrowserRouter } from './BrowserRouter';
+export { HashRouter } from './HashRouter';
 /**
  * useRoutes for Suspense Render-as-You-Fetch
  *
