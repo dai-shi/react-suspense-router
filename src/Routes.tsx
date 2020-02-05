@@ -1,4 +1,11 @@
-import React, { createElement, useMemo } from 'react';
+/* eslint react/no-children-prop: off */
+
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   useParams,
   useResolvedLocation,
@@ -10,9 +17,14 @@ import {
   // @ts-ignore
 } from 'react-router';
 
-import { Route, match as Match, hasRouteElement } from './types';
-import { RouteWrapper } from './RouteWrapper';
+import {
+  Route,
+  hasRouteElement,
+  match as Match,
+  HistoryEvent,
+} from './types';
 import { useHistory } from './HistoryContext';
+import { RouteDataProvider } from './RouteDataContext';
 
 // HACK because RouteContext is not exported.
 const EMPTY_PATHNAME = { pathname: null };
@@ -24,39 +36,53 @@ export const useRoutes = (
   caseSensitive = false,
 ) => {
   const history = useHistory();
-  const location = useLocation();
   const parentPathname = usePathname();
   const parentParams = useParams();
+  const initialLocation = useRef(useLocation());
 
   const basename = basenameOrig
     ? `${parentPathname}/${basenameOrig}`.replace(/\/\/+/g, '/')
     : parentPathname;
 
-  const matches = useMemo(
-    () => matchRoutes(routesOrig, location, basename, caseSensitive),
-    [routesOrig, location, basename, caseSensitive],
-  );
+  const [routeDataMap, setRouteDataMap] = useState<{ [path: string]: object }>({});
 
-  const routes = [...routesOrig];
-  (matches || []).forEach((match: Match & { route?: Route }) => {
-    if (!match.route) return;
-    const routeIndex = routes.indexOf(match.route);
-    if (routeIndex === -1) return;
-    const route = routes[routeIndex];
-    if (!hasRouteElement(route)) return;
+  useEffect(() => {
+    const callback = ({ location }: HistoryEvent) => {
+      const matches = matchRoutes(
+        routesOrig,
+        location,
+        basename,
+        caseSensitive,
+      );
+      (matches || []).forEach((match: Match & { route?: Route }) => {
+        const { params, pathname, route } = match;
+        if (!route || !hasRouteElement(route)) return;
+        const { fetchData } = route.element.props;
+        if (!fetchData) return;
+        const m: Match = {
+          params: { ...parentParams, ...params },
+          pathname,
+        };
+        const routeData = fetchData(m);
+        setRouteDataMap((prev) => ({ ...prev, [route.path]: routeData }));
+      });
+    };
+    const unlisten = history.listen(callback);
+    callback({ location: initialLocation.current });
+    return unlisten;
+  }, [history, routesOrig, basename, caseSensitive, parentParams]);
+
+  const routes = routesOrig.map((route) => {
+    if (!hasRouteElement(route)) return route;
     const { fetchData } = route.element.props;
-    if (!fetchData) return;
-    const params = { ...parentParams, ...match.params };
-    const element = createElement(RouteWrapper, {
-      key: route.path, // to make sure re-mounting for different routes (any other better way?)
-      history,
-      routePath: route.path,
-      basename,
-      caseSensitive,
-      fetchData,
-      match: { params, pathname: match.pathname },
-    }, route.element);
-    routes[routeIndex] = { ...route, element };
+    if (!fetchData) return route;
+    const routeData = routeDataMap[route.path] as object | undefined;
+    return {
+      ...route,
+      element: routeData && (
+        <RouteDataProvider data={routeData} children={route.element} />
+      ),
+    };
   });
 
   return useRoutesOrig(routes, basenameOrig, caseSensitive);
@@ -72,6 +98,9 @@ export const Routes: React.FC<Props> = ({
   caseSensitive = false,
   children,
 }) => {
-  const routes = createRoutesFromChildren(children);
+  const routes = useMemo(
+    () => createRoutesFromChildren(children),
+    [children],
+  );
   return useRoutes(routes, basename, caseSensitive);
 };
