@@ -1,24 +1,26 @@
 import React, { useRef } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import { createBrowserHistory } from 'history';
+import { createMemoryHistory } from 'history';
 
 import { Router } from './Router';
 import { History } from './types';
 
 type Props = {
-  window?: unknown;
+  initialEntries: number;
+  initialIndex: number;
   timeout?: number;
 };
 
-export const BrowserRouter: React.FC<Props> = ({
-  window,
+export const MemoryRouter: React.FC<Props> = ({
+  initialEntries,
+  initialIndex,
   timeout,
   children,
 }) => {
   const history = useRef<History>();
   if (!history.current) {
-    history.current = createBrowserHistory({ window });
+    history.current = createMemoryHistory({ initialEntries, initialIndex });
   }
   return (
     <Router history={history.current} timeout={timeout}>
@@ -27,4 +29,4 @@ export const BrowserRouter: React.FC<Props> = ({
   );
 };
 
-export default BrowserRouter;
+export default MemoryRouter;
