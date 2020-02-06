@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.0.0-alpha.1] - 2020-02-06
+### Changed
+- Fix dependencies
+
 ## [1.0.0-alpha.0] - 2020-02-06
 ### Changed
 - Refactor and simplify with forked react-router
