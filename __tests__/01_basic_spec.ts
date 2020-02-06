@@ -2,7 +2,6 @@ import {
   LazyFetcher,
   useRouteData,
   useRouteDataSelector,
-  useSuspensePending,
 } from '../src/index';
 
 describe('basic spec', () => {
@@ -10,6 +9,5 @@ describe('basic spec', () => {
     expect(LazyFetcher).toBeDefined();
     expect(useRouteData).toBeDefined();
     expect(useRouteDataSelector).toBeDefined();
-    expect(useSuspensePending).toBeDefined();
   });
 });

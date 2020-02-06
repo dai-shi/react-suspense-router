@@ -7,6 +7,8 @@ import {
   createRoutesFromChildren,
   useRoutes as useRoutesOrig,
   useLocation,
+  useHistory,
+  useStartTransition,
   matchRoutes,
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
@@ -18,7 +20,6 @@ import {
   match as Match,
   HistoryEvent,
 } from './types';
-import { useHistory } from './HistoryContext';
 import { RouteDataProvider } from './RouteDataContext';
 
 // HACK because RouteContext is not exported.
@@ -31,6 +32,7 @@ export const useRoutes = (
   caseSensitive = false,
 ) => {
   const history = useHistory();
+  const startTransitionRef = useRef(useStartTransition());
   const parentPathname = usePathname();
   const parentParams = useParams();
   const initialLocation = useRef(useLocation());
@@ -57,7 +59,7 @@ export const useRoutes = (
   });
 
   useEffect(() => {
-    const callback = ({ location }: HistoryEvent) => {
+    const callback = (location: HistoryEvent['location']) => {
       const matches = matchRoutes(
         ref.current?.routesOrig,
         location,
@@ -77,8 +79,12 @@ export const useRoutes = (
         setRouteDataMap((prev) => ({ ...prev, [route.path]: routeData }));
       });
     };
-    const unlisten = history.listen(callback);
-    callback({ location: initialLocation.current });
+    const unlisten = history.listen(({ location }: HistoryEvent) => {
+      startTransitionRef.current(() => {
+        callback(location);
+      });
+    });
+    callback(initialLocation.current);
     return unlisten;
   }, [history]);
 

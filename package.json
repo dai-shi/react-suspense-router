@@ -1,7 +1,7 @@
 {
   "name": "react-suspense-router",
   "description": "React Router for React Suspense and Render-as-You-Fetch",
-  "version": "0.8.0",
+  "version": "1.0.0-alpha.0",
   "author": "Daishi Kato",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
   "license": "MIT",
   "dependencies": {
     "history": "^5.0.0-beta.4",
-    "react-router": "^6.0.0-alpha.1",
+    "react-router": "https://github.com/dai-shi/react-router/releases/download/6.0.0-alpha.1.dev-use-history.1/react-router-6.0.0-alpha.1.dev-use-history.1.tgz",
     "react-router-dom": "^6.0.0-alpha.1",
     "react-suspense-fetch": "^0.2.0",
     "react-tracked": "^1.0.5"

@@ -1,5 +1,4 @@
 /// <reference types="react" />
-/// <reference types="react/experimental" />
 export declare const RouteDataProvider: import("react").ComponentType<{
     data: object;
 }>;
