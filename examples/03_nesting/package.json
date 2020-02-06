@@ -8,7 +8,7 @@
     "core-js": "latest",
     "react": "experimental",
     "react-dom": "experimental",
-    "react-suspense-router": "latest",
+    "react-suspense-router": "^1.0.0-alpha.1",
     "react-scripts": "latest",
     "typescript": "latest"
   },
