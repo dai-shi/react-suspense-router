@@ -36,7 +36,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "react-router": "npm:@daishi/react-router@^6.0.0-alpha.1.lib.2",
+    "react-router": "npm:@daishi/react-router@^6.0.0-alpha.1.lib.3",
     "react-router-dom": "^6.0.0-alpha.1",
     "react-suspense-fetch": "^0.2.0",
     "react-tracked": "^1.0.5"

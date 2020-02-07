@@ -6,9 +6,7 @@ import {
   useResolvedLocation,
   createRoutesFromChildren,
   useRoutes as useRoutesOrig,
-  useLocation,
-  useHistory,
-  useStartTransition,
+  useListen,
   matchRoutes,
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
@@ -31,11 +29,9 @@ export const useRoutes = (
   basenameOrig = '',
   caseSensitive = false,
 ) => {
-  const history = useHistory();
-  const startTransitionRef = useRef(useStartTransition());
+  const listen = useListen();
   const parentPathname = usePathname();
   const parentParams = useParams();
-  const initialLocation = useRef(useLocation());
 
   const basename = basenameOrig
     ? `${parentPathname}/${basenameOrig}`.replace(/\/\/+/g, '/')
@@ -79,14 +75,11 @@ export const useRoutes = (
         setRouteDataMap((prev) => ({ ...prev, [route.path]: routeData }));
       });
     };
-    const unlisten = history.listen(({ location }: HistoryEvent) => {
-      startTransitionRef.current(() => {
-        callback(location);
-      });
+    const unlisten = listen((location: HistoryEvent['location']) => {
+      callback(location);
     });
-    callback(initialLocation.current);
     return unlisten;
-  }, [history]);
+  }, [listen]);
 
   const routes = routesOrig.map((route) => {
     if (!hasRouteElement(route)) return route;
