@@ -47,8 +47,6 @@
     "@types/react-dom": "^16.9.5",
     "@typescript-eslint/eslint-plugin": "^2.19.0",
     "@typescript-eslint/parser": "^2.19.0",
-    "babel-loader": "^8.0.6",
-    "core-js": "^3.6.4",
     "documentation": "^12.1.4",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",

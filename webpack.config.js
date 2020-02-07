@@ -17,24 +17,16 @@ module.exports = {
   ],
   module: {
     rules: [{
-      test: /\.jsx?$/,
+      test: /\.[jt]sx?$/,
       exclude: /node_modules/,
-      use: [{
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            ['@babel/preset-env', {
-              useBuiltIns: 'usage',
-              corejs: 3,
-            }],
-            '@babel/preset-react',
-          ],
-        },
-      }],
-    }, {
-      test: /\.tsx?$/,
       loader: 'ts-loader',
+      options: {
+        transpileOnly: true,
+      },
     }],
+  },
+  stats: {
+    warningsFilter: /export '.*' was not found in/,
   },
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
