@@ -16,7 +16,7 @@ import {
   Route,
   hasRouteElement,
   match as Match,
-  HistoryEvent,
+  Location,
 } from './types';
 import { RouteDataProvider } from './RouteDataContext';
 
@@ -55,7 +55,7 @@ export const useRoutes = (
   });
 
   useEffect(() => {
-    const callback = (location: HistoryEvent['location']) => {
+    const callback = (location: Location) => {
       const matches = matchRoutes(
         ref.current?.routesOrig,
         location,
@@ -75,7 +75,7 @@ export const useRoutes = (
         setRouteDataMap((prev) => ({ ...prev, [route.path]: routeData }));
       });
     };
-    const unlisten = listen((location: HistoryEvent['location']) => {
+    const unlisten = listen((location: Location) => {
       callback(location);
     });
     return unlisten;

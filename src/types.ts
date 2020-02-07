@@ -23,7 +23,4 @@ export type match<Params extends { [K in keyof Params]?: string } = {}> = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type History = any;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type HistoryEvent = any;
+export type Location = any;
