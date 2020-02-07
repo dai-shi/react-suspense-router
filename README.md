@@ -16,7 +16,7 @@ You can get the benefit of Render-as-You-Fetch out of the box.
 ## Install
 
 ```bash
-npm install react-suspense-router
+yarn add react-suspense-router
 ```
 
 ## Usage
@@ -262,7 +262,7 @@ The [examples](examples) folder contains working examples.
 You can run one of them with
 
 ```bash
-PORT=8080 npm run examples:01_minimal
+PORT=8080 yarn run examples:01_minimal
 ```
 
 and open <http://localhost:8080> in your web browser.
