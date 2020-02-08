@@ -56,7 +56,7 @@ export const useRoutes = (
 
   useEffect(() => {
     let map = new Map<string, object>();
-    const callback = (location: Location) => {
+    const unlisten = listen((location: Location) => {
       const matches = matchRoutes(
         ref.current?.routesOrig,
         location,
@@ -80,9 +80,6 @@ export const useRoutes = (
         if (prev.size === 0 && map.size === 0) return prev; // bail out
         return map;
       });
-    };
-    const unlisten = listen((location: Location) => {
-      callback(location);
     });
     return unlisten;
   }, [listen]);
