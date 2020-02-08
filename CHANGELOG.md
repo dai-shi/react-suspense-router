@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [1.0.0-alpha.2] - 2020-02-08
 ### Changed
 - Better useListen hook from forked react-router
 - Fix showing canceled route data
