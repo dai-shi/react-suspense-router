@@ -55,6 +55,7 @@ export const useRoutes = (
   });
 
   useEffect(() => {
+    let map = new Map<string, object>();
     const callback = (location: Location) => {
       const matches = matchRoutes(
         ref.current?.routesOrig,
@@ -62,7 +63,7 @@ export const useRoutes = (
         ref.current?.basename,
         ref.current?.caseSensitive,
       );
-      const map = new Map<string, object>();
+      map = new Map<string, object>();
       (matches || []).forEach((match: Match & { route?: Route }) => {
         const { params, pathname, route } = match;
         if (!route || !hasRouteElement(route)) return;
