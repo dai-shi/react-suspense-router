@@ -37,7 +37,7 @@ export const useRoutes = (
     ? `${parentPathname}/${basenameOrig}`.replace(/\/\/+/g, '/')
     : parentPathname;
 
-  const [routeDataMap, setRouteDataMap] = useState<{ [path: string]: object }>({});
+  const [routeDataMap, setRouteDataMap] = useState(new Map<string, object>());
 
   const ref = useRef<{
     routesOrig: Route[];
@@ -62,6 +62,7 @@ export const useRoutes = (
         ref.current?.basename,
         ref.current?.caseSensitive,
       );
+      const map = new Map<string, object>();
       (matches || []).forEach((match: Match & { route?: Route }) => {
         const { params, pathname, route } = match;
         if (!route || !hasRouteElement(route)) return;
@@ -72,8 +73,9 @@ export const useRoutes = (
           pathname,
         };
         const routeData = fetchData(m);
-        setRouteDataMap((prev) => ({ ...prev, [route.path]: routeData }));
+        map.set(route.path, routeData);
       });
+      setRouteDataMap(map);
     };
     const unlisten = listen((location: Location) => {
       callback(location);
@@ -85,7 +87,7 @@ export const useRoutes = (
     if (!hasRouteElement(route)) return route;
     const { fetchData } = route.element.props;
     if (!fetchData) return route;
-    const routeData = routeDataMap[route.path] as object | undefined;
+    const routeData = routeDataMap.get(route.path);
     return {
       ...route,
       element: routeData && (
