@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [1.0.0-alpha.2] - 2020-02-08
+## [1.0.0-alpha.3] - 2020-02-08
 ### Changed
 - Better useListen hook from forked react-router
 - Fix showing canceled route data
