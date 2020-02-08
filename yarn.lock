@@ -8160,10 +8160,10 @@ react-router-dom@^6.0.0-alpha.1:
     history "5.0.0-beta.4"
     prop-types "^15.7.2"
 
-"react-router@npm:@daishi/react-router@^6.0.0-alpha.1.lib.3":
-  version "6.0.0-alpha.1.lib.3"
-  resolved "https://registry.yarnpkg.com/@daishi/react-router/-/react-router-6.0.0-alpha.1.lib.3.tgz#284dcf700e4115c8a4d98bfb4aa40bb061dd502f"
-  integrity sha512-Jxj9AiJCM9LdRwJyIl/I2lutHv/9pAY5Z4MMjAgnt3dacATT+YAsEvM1ETRTdBYjvva2npFvPkpOQyeU3KxipA==
+"react-router@npm:@daishi/react-router@^6.0.0-alpha.1.lib.4":
+  version "6.0.0-alpha.1.lib.4"
+  resolved "https://registry.yarnpkg.com/@daishi/react-router/-/react-router-6.0.0-alpha.1.lib.4.tgz#9fe788dbb5c797871871104763c9dc16e56a298b"
+  integrity sha512-ptWnTtQPkChDs+IO6Axk63DMXBYmT2FXyG/POWXnBRKh3CtPrfEmRqKVRJwF/uw7UunfDb7QvOIvnVSSuoyydw==
   dependencies:
     history "5.0.0-beta.4"
     prop-types "^15.7.2"

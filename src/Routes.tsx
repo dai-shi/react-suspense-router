@@ -75,7 +75,10 @@ export const useRoutes = (
         const routeData = fetchData(m);
         map.set(route.path, routeData);
       });
-      setRouteDataMap(map);
+      setRouteDataMap((prev) => {
+        if (prev.size === 0 && map.size === 0) return prev; // bail out
+        return map;
+      });
     };
     const unlisten = listen((location: Location) => {
       callback(location);
