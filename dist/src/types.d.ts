@@ -16,6 +16,5 @@ export declare type match<Params extends {
     params: Params;
     pathname: string;
 };
-export declare type History = any;
-export declare type HistoryEvent = any;
+export declare type Location = any;
 export {};
