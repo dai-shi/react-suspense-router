@@ -6,7 +6,7 @@
     "react": "experimental",
     "react-dom": "experimental",
     "react-suspense-fetch": "latest",
-    "react-suspense-router": "^1.0.0-alpha.1",
+    "react-suspense-router": "latest",
     "react-scripts": "latest"
   },
   "scripts": {
