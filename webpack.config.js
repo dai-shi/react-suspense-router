@@ -5,7 +5,7 @@ const { DIR, EXT = 'ts' } = process.env;
 
 module.exports = {
   mode: 'development',
-  devtool: 'source-map',
+  devtool: 'cheap-module-eval-source-map',
   entry: `./examples/${DIR}/src/index.${EXT}`,
   output: {
     publicPath: '/',

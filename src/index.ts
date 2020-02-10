@@ -34,6 +34,15 @@ export {
   // @ts-ignore
 } from 'react-router-dom';
 
+/*
+export {
+  StaticRouter,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+} from 'react-router-dom/server';
+*/
+export { StaticRouter } from './StaticRouter';
+
 /**
  * Routes for Suspense Render-as-You-Fetch
  *
