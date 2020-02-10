@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.0.0-alpha.4] - 2020-02-10
+### Added
+- Experimental SSR support and an example
+
 ## [1.0.0-alpha.3] - 2020-02-08
 ### Changed
 - Better useListen hook from forked react-router
