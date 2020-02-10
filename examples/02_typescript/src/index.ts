@@ -5,6 +5,7 @@ import { createElement } from 'react';
 import {
   createRoot,
   createBlockingRoot,
+  // hydrate,
 } from 'react-dom';
 
 import { BrowserRouter } from 'react-suspense-router';
@@ -19,6 +20,7 @@ const RootElement = createElement(
 const ele = document.getElementById('app');
 if (!ele) throw new Error('no app');
 if (ele.innerHTML) {
+  // hydrate(RootElement, ele);
   createBlockingRoot(ele, { hydrate: true }).render(RootElement);
   // ele.innerHTML = ''; // XXX this flushes...
   // createRoot(ele).render(RootElement);

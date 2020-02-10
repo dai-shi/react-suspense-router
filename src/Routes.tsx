@@ -7,6 +7,7 @@ import {
   createRoutesFromChildren,
   useRoutes as useRoutesOrig,
   useListen,
+  useLocation,
   matchRoutes,
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
@@ -24,7 +25,63 @@ import { RouteDataProvider } from './RouteDataContext';
 const EMPTY_PATHNAME = { pathname: null };
 const usePathname = () => useResolvedLocation(EMPTY_PATHNAME).pathname;
 
-export const useRoutes = (
+const isSsr = typeof window === 'undefined' || !!(window as { isSsr?: boolean }).isSsr;
+const cacheForSsr: { [basename: string]: Map<string, object> } = {};
+
+const useRoutesSsr = (
+  routesOrig: Route[],
+  basenameOrig = '',
+  caseSensitive = false,
+) => {
+  const parentPathname = usePathname();
+  const parentParams = useParams();
+
+  const basename = basenameOrig
+    ? `${parentPathname}/${basenameOrig}`.replace(/\/\/+/g, '/')
+    : parentPathname;
+
+  const location = useLocation();
+  const matches = matchRoutes(
+    routesOrig,
+    location,
+    basename,
+    caseSensitive,
+  );
+  let routeDataMap = cacheForSsr[basename];
+  if (!routeDataMap) {
+    routeDataMap = new Map<string, object>();
+    (matches || []).forEach((match: Match & { route?: Route }) => {
+      const { params, pathname, route } = match;
+      if (!route || !hasRouteElement(route)) return;
+      const { fetchData } = route.element.props;
+      if (!fetchData) return;
+      const m: Match = {
+        params: { ...parentParams, ...params },
+        pathname,
+      };
+      const routeData = fetchData(m);
+      routeDataMap.set(route.path, routeData);
+    });
+    cacheForSsr[basename] = routeDataMap;
+  }
+
+  const routes = routesOrig.map((route) => {
+    if (!hasRouteElement(route)) return route;
+    const { fetchData } = route.element.props;
+    if (!fetchData) return route;
+    const routeData = routeDataMap.get(route.path);
+    return {
+      ...route,
+      element: routeData && (
+        <RouteDataProvider data={routeData} children={route.element} />
+      ),
+    };
+  });
+
+  return useRoutesOrig(routes, basenameOrig, caseSensitive);
+};
+
+export const useRoutes = isSsr ? useRoutesSsr : (
   routesOrig: Route[],
   basenameOrig = '',
   caseSensitive = false,
