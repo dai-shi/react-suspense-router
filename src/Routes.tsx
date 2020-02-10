@@ -25,6 +25,51 @@ import { RouteDataProvider } from './RouteDataContext';
 const EMPTY_PATHNAME = { pathname: null };
 const usePathname = () => useResolvedLocation(EMPTY_PATHNAME).pathname;
 
+const useBasename = (basenameOrig: string) => {
+  const parentPathname = usePathname();
+  const basename = basenameOrig
+    ? `${parentPathname}/${basenameOrig}`.replace(/\/\/+/g, '/')
+    : parentPathname;
+  return basename;
+};
+
+const attachRouteData = (
+  routesOrig: Route[],
+  routeDataMap: Map<string, object>,
+) => routesOrig.map((route) => {
+  if (!hasRouteElement(route)) return route;
+  const { fetchData } = route.element.props;
+  if (!fetchData) return route;
+  const routeData = routeDataMap.get(route.path);
+  return {
+    ...route,
+    element: routeData && (
+      <RouteDataProvider data={routeData} children={route.element} />
+    ),
+  };
+});
+
+const createRouteDataMap = (
+  matches: (Match & { route?: Route })[],
+  parentParams: { [key: string]: string },
+) => {
+  const map = new Map<string, object>();
+  (matches || []).forEach((match: Match & { route?: Route }) => {
+    const { params, pathname, route } = match;
+    if (!route || !hasRouteElement(route)) return;
+    const { fetchData } = route.element.props;
+    if (!fetchData) return;
+    const m: Match = {
+      params: { ...parentParams, ...params },
+      pathname,
+    };
+    const routeData = fetchData(m);
+    map.set(route.path, routeData);
+  });
+  return map;
+};
+
+// for ssr
 const isSsr = typeof window === 'undefined' || !!(window as { isSsr?: boolean }).isSsr;
 const cacheForSsr: { [basename: string]: Map<string, object> } = {};
 
@@ -33,51 +78,18 @@ const useRoutesSsr = (
   basenameOrig = '',
   caseSensitive = false,
 ) => {
-  const parentPathname = usePathname();
+  const basename = useBasename(basenameOrig);
   const parentParams = useParams();
 
-  const basename = basenameOrig
-    ? `${parentPathname}/${basenameOrig}`.replace(/\/\/+/g, '/')
-    : parentPathname;
-
   const location = useLocation();
-  const matches = matchRoutes(
-    routesOrig,
-    location,
-    basename,
-    caseSensitive,
-  );
+  const matches = matchRoutes(routesOrig, location, basename, caseSensitive);
   let routeDataMap = cacheForSsr[basename];
   if (!routeDataMap) {
-    routeDataMap = new Map<string, object>();
-    (matches || []).forEach((match: Match & { route?: Route }) => {
-      const { params, pathname, route } = match;
-      if (!route || !hasRouteElement(route)) return;
-      const { fetchData } = route.element.props;
-      if (!fetchData) return;
-      const m: Match = {
-        params: { ...parentParams, ...params },
-        pathname,
-      };
-      const routeData = fetchData(m);
-      routeDataMap.set(route.path, routeData);
-    });
+    routeDataMap = createRouteDataMap(matches, parentParams);
     cacheForSsr[basename] = routeDataMap;
   }
 
-  const routes = routesOrig.map((route) => {
-    if (!hasRouteElement(route)) return route;
-    const { fetchData } = route.element.props;
-    if (!fetchData) return route;
-    const routeData = routeDataMap.get(route.path);
-    return {
-      ...route,
-      element: routeData && (
-        <RouteDataProvider data={routeData} children={route.element} />
-      ),
-    };
-  });
-
+  const routes = attachRouteData(routesOrig, routeDataMap);
   return useRoutesOrig(routes, basenameOrig, caseSensitive);
 };
 
@@ -87,12 +99,8 @@ export const useRoutes = isSsr ? useRoutesSsr : (
   caseSensitive = false,
 ) => {
   const listen = useListen();
-  const parentPathname = usePathname();
+  const basename = useBasename(basenameOrig);
   const parentParams = useParams();
-
-  const basename = basenameOrig
-    ? `${parentPathname}/${basenameOrig}`.replace(/\/\/+/g, '/')
-    : parentPathname;
 
   const [routeDataMap, setRouteDataMap] = useState(new Map<string, object>());
 
@@ -120,19 +128,7 @@ export const useRoutes = isSsr ? useRoutesSsr : (
         ref.current?.basename,
         ref.current?.caseSensitive,
       );
-      map = new Map<string, object>();
-      (matches || []).forEach((match: Match & { route?: Route }) => {
-        const { params, pathname, route } = match;
-        if (!route || !hasRouteElement(route)) return;
-        const { fetchData } = route.element.props;
-        if (!fetchData) return;
-        const m: Match = {
-          params: { ...ref.current?.parentParams, ...params },
-          pathname,
-        };
-        const routeData = fetchData(m);
-        map.set(route.path, routeData);
-      });
+      map = createRouteDataMap(matches || [], ref.current?.parentParams || {});
       setRouteDataMap((prev) => {
         if (prev.size === 0 && map.size === 0) return prev; // bail out
         return map;
@@ -141,19 +137,7 @@ export const useRoutes = isSsr ? useRoutesSsr : (
     return unlisten;
   }, [listen]);
 
-  const routes = routesOrig.map((route) => {
-    if (!hasRouteElement(route)) return route;
-    const { fetchData } = route.element.props;
-    if (!fetchData) return route;
-    const routeData = routeDataMap.get(route.path);
-    return {
-      ...route,
-      element: routeData && (
-        <RouteDataProvider data={routeData} children={route.element} />
-      ),
-    };
-  });
-
+  const routes = attachRouteData(routesOrig, routeDataMap);
   return useRoutesOrig(routes, basenameOrig, caseSensitive);
 };
 
