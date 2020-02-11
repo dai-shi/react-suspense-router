@@ -28,6 +28,7 @@
     "react/jsx-props-no-spreading": "off",
     "import/extensions": ["error", "never"],
     "import/no-unresolved": ["error", { "ignore": ["react-suspense-router"] }],
+    "no-underscore-dangle": ["error", { "allow": ["__ROUTE_DATA_MAP_CACHE__"] }],
     "camelcase": ["error", { "properties": "never", "ignoreDestructuring": false, "allow": ["first_name", "last_name"] }]
   },
   "overrides": [{

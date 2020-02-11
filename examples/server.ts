@@ -63,10 +63,14 @@ app.use(async (req, res) => {
   } = res.locals.webpackStats.toJson();
   const memFs = res.locals.fs;
 
-  const jsAssets = `<script type="text/javascript" src="${publicPath}${assetsByChunkName.main}"></script>`;
+  let jsAssets = `<script type="text/javascript" src="${publicPath}${assetsByChunkName.main}"></script>`;
 
   const userAgent = 'react-suspense-router (ServerSideRendering)';
-  const windowMock = { navigator: { userAgent }, cacheForSsr: {} };
+  const routeDataMapCache = {};
+  const windowMock = {
+    navigator: { userAgent },
+    __ROUTE_DATA_MAP_CACHE__: routeDataMapCache,
+  };
   const documentMock = {
     createElement() {
       return {};
@@ -102,9 +106,11 @@ app.use(async (req, res) => {
   };
   const appHtml = await renderLoop(0);
 
-  // clear cacheForSsr
-  Object.keys(windowMock.cacheForSsr).forEach((key) => {
-    delete windowMock.cacheForSsr[key as keyof typeof windowMock.cacheForSsr];
+  // inject routeDataMapCache
+  jsAssets = `<script>window.__ROUTE_DATA_MAP_CACHE__=${JSON.stringify(routeDataMapCache)}</script>${jsAssets}`;
+  // clear routeDataMapCache (for the future)
+  Object.keys(routeDataMapCache).forEach((key) => {
+    delete routeDataMapCache[key as keyof typeof routeDataMapCache];
   });
 
   let body = fs.readFileSync(template, 'utf8');

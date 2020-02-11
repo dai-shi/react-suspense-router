@@ -33,14 +33,16 @@ const useBasename = (basenameOrig: string) => {
   return basename;
 };
 
+type RouteDataMap = { [path: string]: object };
+
 const attachRouteData = (
   routesOrig: Route[],
-  routeDataMap: Map<string, object>,
+  routeDataMap: RouteDataMap,
 ) => routesOrig.map((route) => {
   if (!hasRouteElement(route)) return route;
   const { fetchData } = route.element.props;
   if (!fetchData) return route;
-  const routeData = routeDataMap.get(route.path);
+  const routeData = routeDataMap[route.path];
   return {
     ...route,
     element: routeData && (
@@ -53,7 +55,7 @@ const createRouteDataMap = (
   matches: (Match & { route?: Route })[],
   parentParams: { [key: string]: string },
 ) => {
-  const map = new Map<string, object>();
+  const map: RouteDataMap = {};
   (matches || []).forEach((match: Match & { route?: Route }) => {
     const { params, pathname, route } = match;
     if (!route || !hasRouteElement(route)) return;
@@ -64,9 +66,38 @@ const createRouteDataMap = (
       pathname,
     };
     const routeData = fetchData(m);
-    map.set(route.path, routeData);
+    map[route.path] = routeData;
   });
   return map;
+};
+
+const getCachedRouteDataMap = (basename: string) => {
+  try {
+    const cache = (window as unknown as {
+      __ROUTE_DATA_MAP_CACHE__: { [basename: string]: RouteDataMap };
+    }).__ROUTE_DATA_MAP_CACHE__;
+    if (!cache[basename]) {
+      cache[basename] = {};
+    }
+    return cache[basename];
+  } catch (e) {
+    return {} as RouteDataMap;
+  }
+};
+
+const consumeCachedRouteDataMap = (basename: string) => {
+  try {
+    const cache = (window as unknown as {
+      __ROUTE_DATA_MAP_CACHE__: { [basename: string]: RouteDataMap };
+    }).__ROUTE_DATA_MAP_CACHE__;
+    if (cache[basename]) {
+      delete cache[basename];
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
 };
 
 // for ssr
@@ -75,9 +106,6 @@ const isSsr = (
   || typeof window.navigator === 'undefined'
   || `${window.navigator.userAgent}`.includes('ServerSideRendering')
 );
-type CacheForSsr = { [basename: string]: Map<string, object> };
-const cacheForSsr: CacheForSsr = (typeof window !== 'undefined'
-  && (window as { cacheForSsr?: CacheForSsr}).cacheForSsr) || {};
 
 const useRoutesSsr = (
   routesOrig: Route[],
@@ -89,10 +117,9 @@ const useRoutesSsr = (
 
   const location = useLocation();
   const matches = matchRoutes(routesOrig, location, basename, caseSensitive);
-  let routeDataMap = cacheForSsr[basename];
-  if (!routeDataMap) {
-    routeDataMap = createRouteDataMap(matches, parentParams);
-    cacheForSsr[basename] = routeDataMap;
+  const routeDataMap = getCachedRouteDataMap(basename);
+  if (Object.keys(routeDataMap).length === 0) {
+    Object.assign(routeDataMap, createRouteDataMap(matches, parentParams));
   }
 
   const routes = attachRouteData(routesOrig, routeDataMap);
@@ -108,7 +135,9 @@ export const useRoutes = isSsr ? useRoutesSsr : (
   const basename = useBasename(basenameOrig);
   const parentParams = useParams();
 
-  const [routeDataMap, setRouteDataMap] = useState(new Map<string, object>());
+  const [routeDataMap, setRouteDataMap] = useState<RouteDataMap>(
+    () => getCachedRouteDataMap(basename),
+  );
 
   const ref = useRef<{
     routesOrig: Route[];
@@ -116,6 +145,7 @@ export const useRoutes = isSsr ? useRoutesSsr : (
     caseSensitive: boolean;
     parentParams: { [key: string]: string };
   }>();
+  // Should we useLayoutEffect here?
   useEffect(() => {
     ref.current = {
       routesOrig,
@@ -126,8 +156,12 @@ export const useRoutes = isSsr ? useRoutesSsr : (
   });
 
   useEffect(() => {
-    let map = new Map<string, object>();
+    let map: RouteDataMap = {};
     const unlisten = listen((location: Location) => {
+      if (consumeCachedRouteDataMap(ref.current?.basename || '')) {
+        // we assume hydration this time
+        return;
+      }
       const matches = matchRoutes(
         ref.current?.routesOrig,
         location,
@@ -136,7 +170,10 @@ export const useRoutes = isSsr ? useRoutesSsr : (
       );
       map = createRouteDataMap(matches || [], ref.current?.parentParams || {});
       setRouteDataMap((prev) => {
-        if (prev.size === 0 && map.size === 0) return prev; // bail out
+        if (Object.keys(prev).length === 0 && Object.keys(map).length === 0) {
+          // bail out
+          return prev;
+        }
         return map;
       });
     });
