@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [1.0.0-alpha.5] - 2020-02-11
 ### Changed
 - Eliminate "useLayoutEffect does nothing on the server" warning in SSR
 - Fix issues with hydration in SSR
