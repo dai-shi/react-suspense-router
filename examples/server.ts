@@ -10,6 +10,7 @@ const { PORT, DIR, EXT = 'ts' } = process.env;
 
 const publicPath = '/';
 const template = `./examples/${DIR}/public/index.html`;
+const outputLibraryEntry = '__entry__';
 
 const compiler = webpack({
   mode: 'development',
@@ -19,6 +20,8 @@ const compiler = webpack({
   },
   output: {
     publicPath,
+    libraryTarget: 'var',
+    library: outputLibraryEntry,
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -88,7 +91,7 @@ app.use(async (req, res) => {
   const ssrCode = memFs.readFileSync(`${outputPath}/${assetsByChunkName.ssr}`, 'utf8');
   // fs.writeFileSync('./ssrcode.js', ssrCode, 'utf8');
   // const ssrCode = fs.readFileSync('./ssrcode.js', 'utf8');
-  const ssrFactory = requireFromString(`module.exports=function(window,document,fetch){return ${ssrCode}}`);
+  const ssrFactory = requireFromString(`module.exports=function(window,document,fetch){${ssrCode};return ${outputLibraryEntry}}`);
   const ssr = ssrFactory(windowMock, documentMock, fetch).default;
 
   const renderLoop = async (repeat: number): Promise<string> => {
@@ -96,8 +99,8 @@ app.use(async (req, res) => {
     try {
       return ssr(req.url);
     } catch (e) {
-      if (e.message === 'ReactDOMServer does not yet support lazy-loaded components.') {
-        // HACK until renderToString support lazy and suspense
+      if (/not yet support lazy-loaded|invariant=295/.test(e.message)) {
+        // HACK until renderToString supports lazy and suspense
         await new Promise((r) => setTimeout(r, 500 * repeat));
         return renderLoop(repeat + 1);
       }
