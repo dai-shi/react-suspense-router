@@ -65,7 +65,8 @@ app.use(async (req, res) => {
 
   const jsAssets = `<script type="text/javascript" src="${publicPath}${assetsByChunkName.main}"></script>`;
 
-  const windowMock = { fetch, isSsr: true };
+  const userAgent = 'react-suspense-router (ServerSideRendering)';
+  const windowMock = { navigator: { userAgent }, cacheForSsr: {} };
   const documentMock = {
     createElement() {
       return {};
@@ -100,6 +101,11 @@ app.use(async (req, res) => {
     }
   };
   const appHtml = await renderLoop(0);
+
+  // clear cacheForSsr
+  Object.keys(windowMock.cacheForSsr).forEach((key) => {
+    delete windowMock.cacheForSsr[key as keyof typeof windowMock.cacheForSsr];
+  });
 
   let body = fs.readFileSync(template, 'utf8');
   body = body.replace('<div id="app"></div>', `<div id="app">${appHtml}</div>`);

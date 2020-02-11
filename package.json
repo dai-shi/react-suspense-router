@@ -41,7 +41,7 @@
     "react-router": "npm:@daishi/react-router@^6.0.0-alpha.1.lib.4",
     "react-router-dom": "^6.0.0-alpha.1",
     "react-suspense-fetch": "^0.2.0",
-    "react-tracked": "^1.0.5"
+    "react-tracked": "^1.0.6"
   },
   "devDependencies": {
     "@types/express": "^4.17.2",

@@ -70,8 +70,14 @@ const createRouteDataMap = (
 };
 
 // for ssr
-const isSsr = typeof window === 'undefined' || !!(window as { isSsr?: boolean }).isSsr;
-const cacheForSsr: { [basename: string]: Map<string, object> } = {};
+const isSsr = (
+  typeof window === 'undefined'
+  || typeof window.navigator === 'undefined'
+  || `${window.navigator.userAgent}`.includes('ServerSideRendering')
+);
+type CacheForSsr = { [basename: string]: Map<string, object> };
+const cacheForSsr: CacheForSsr = (typeof window !== 'undefined'
+  && (window as { cacheForSsr?: CacheForSsr}).cacheForSsr) || {};
 
 const useRoutesSsr = (
   routesOrig: Route[],

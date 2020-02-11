@@ -8470,10 +8470,10 @@ react-suspense-fetch@^0.2.0:
   resolved "https://registry.yarnpkg.com/react-suspense-fetch/-/react-suspense-fetch-0.2.0.tgz#12bd9a9c9e3b7a059fced3d499016012e7faaa10"
   integrity sha512-Lo3LXkXg/GyPNLV1R/ngeYDfGlUn/LYAdIEi8BIKfeFbobbQ1tYvLrwkmObJ0UZcoTa/m/UeEi6flKlxtFyASw==
 
-react-tracked@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/react-tracked/-/react-tracked-1.0.5.tgz#f4d31ee31f39ec20ffbc9ac68598e5ce4efa6a9b"
-  integrity sha512-LItifsI0xuIoT14N15x8XGWS3q1U129P+jqx8i/MjpqDedU80jzk+m2kNjrk9cUpP/5eOhGToImJxhFwuZlj4g==
+react-tracked@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/react-tracked/-/react-tracked-1.0.6.tgz#24b96aac15a13298a83d2491fda50d71d2433f3c"
+  integrity sha512-JNyUqWHqvU1h4oFQH5HNzVS4cm/mxbIlj+o/A0y/KfH+rtat+qHMIT4vmCneFbPD+6kkb/rL+HY8yb8bg5e4yQ==
 
 react@experimental:
   version "0.0.0-experimental-241c4467e"

@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Eliminate "useLayoutEffect does nothing on the server" warning in SSR
 
 ## [1.0.0-alpha.4] - 2020-02-10
 ### Added
