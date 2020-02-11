@@ -46,6 +46,7 @@ const compiler = webpack({
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       'react-suspense-router': `${__dirname}/../src`,
+      'react-dom/server': `${__dirname}/../node_modules/react-dom/server.node.js`,
     },
   },
 });
@@ -94,20 +95,36 @@ app.use(async (req, res) => {
   const ssrFactory = requireFromString(`module.exports=function(window,document,fetch){${ssrCode};return ${outputLibraryEntry}}`);
   const ssr = ssrFactory(windowMock, documentMock, fetch).default;
 
-  const renderLoop = async (repeat: number): Promise<string> => {
-    if (repeat >= 10) return '';
-    try {
-      return ssr(req.url);
-    } catch (e) {
-      if (/not yet support lazy-loaded|invariant=295/.test(e.message)) {
-        // HACK until renderToString supports lazy and suspense
-        await new Promise((r) => setTimeout(r, 500 * repeat));
-        return renderLoop(repeat + 1);
+  const appHtml = await new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    const loop = (repeat: number) => {
+      if (repeat > 5) {
+        reject(new Error('max render loop reached'));
+        return;
       }
-      throw e;
-    }
-  };
-  const appHtml = await renderLoop(0);
+      const stream = ssr(req.url);
+      stream.on('data', (chunk: Buffer) => {
+        chunks.push(chunk);
+      });
+      stream.on('end', () => {
+        const buf = Buffer.concat(chunks);
+        resolve(buf.toString('utf8'));
+      });
+      stream.on('error', (err: Error) => {
+        const timeout = 200 * repeat ** 2;
+        console.log(err.message, 'retrying in', timeout, 'ms');
+        if (chunks.length === 0 && /not yet support lazy-loaded|invariant=295/.test(err.message)) {
+          // HACK until renderToString supports lazy and suspense
+          setTimeout(() => {
+            loop(repeat + 1);
+          }, timeout);
+        } else {
+          reject(err);
+        }
+      });
+    };
+    loop(0);
+  });
 
   // inject routeDataMapCache
   jsAssets = `<script>window.__ROUTE_DATA_MAP_CACHE__=${JSON.stringify(routeDataMapCache)}</script>${jsAssets}`;

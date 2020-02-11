@@ -1,5 +1,5 @@
 import { createElement } from 'react';
-import { renderToString } from 'react-dom/server';
+import { renderToNodeStream } from 'react-dom/server';
 
 import { StaticRouter } from 'react-suspense-router';
 
@@ -10,7 +10,7 @@ const ssr = (location: string) => {
     StaticRouter,
     { location, children: createElement(App) },
   );
-  return renderToString(RootElement);
+  return renderToNodeStream(RootElement);
 };
 
 export default ssr;
