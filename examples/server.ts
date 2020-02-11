@@ -112,9 +112,10 @@ app.use(async (req, res) => {
       });
       stream.on('error', (err: Error) => {
         const timeout = 200 * repeat ** 2;
-        console.log(err.message, 'retrying in', timeout, 'ms');
+        console.log('error while ssr', err.message);
         if (chunks.length === 0 && /not yet support lazy-loaded|invariant=295/.test(err.message)) {
-          // HACK until renderToString supports lazy and suspense
+          // HACK until react-dom/server supports lazy and suspense
+          console.log('retrying in', timeout, 'ms...');
           setTimeout(() => {
             loop(repeat + 1);
           }, timeout);
