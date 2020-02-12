@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { Readable, PassThrough } from 'stream';
 import webpack from 'webpack';
 import middleware from 'webpack-dev-middleware';
 import express from 'express';
@@ -9,8 +10,23 @@ import fetch from 'node-fetch';
 const { PORT, DIR, EXT = 'ts' } = process.env;
 
 const publicPath = '/';
-const template = `./examples/${DIR}/public/index.html`;
 const outputLibraryEntry = '__entry__';
+const template = `./examples/${DIR}/public/index.html`;
+const templateChunks = fs.readFileSync(template, 'utf8').split(/(<div id="app">|<\/body>)/);
+
+const concatStreams = (streams: NodeJS.ReadableStream[]) => {
+  const passThrough = new PassThrough();
+  const next = (index: number) => {
+    if (index < streams.length) {
+      streams[index].pipe(passThrough, { end: false });
+      streams[index].once('end', () => next(index + 1));
+    } else {
+      passThrough.end();
+    }
+  };
+  next(0);
+  return passThrough;
+};
 
 const compiler = webpack({
   mode: 'development',
@@ -67,7 +83,7 @@ app.use(async (req, res) => {
   } = res.locals.webpackStats.toJson();
   const memFs = res.locals.fs;
 
-  let jsAssets = `<script type="text/javascript" src="${publicPath}${assetsByChunkName.main}"></script>`;
+  const jsAssets = `<script type="text/javascript" src="${publicPath}${assetsByChunkName.main}"></script>`;
 
   const userAgent = 'react-suspense-router (ServerSideRendering)';
   const routeDataMapCache = {};
@@ -95,50 +111,56 @@ app.use(async (req, res) => {
   const ssrFactory = requireFromString(`module.exports=function(window,document,fetch){${ssrCode};return ${outputLibraryEntry}}`);
   const ssr = ssrFactory(windowMock, documentMock, fetch).default;
 
-  const appHtml = await new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
+  const getAppStream = () => {
+    const htmlStream = new PassThrough();
+    const dataStream = new PassThrough();
+    let readable = false;
     const loop = (repeat: number) => {
       if (repeat > 5) {
-        reject(new Error('max render loop reached'));
+        htmlStream.destroy(new Error('max render loop reached'));
         return;
       }
-      const stream = ssr(req.url);
-      stream.on('data', (chunk: Buffer) => {
-        chunks.push(chunk);
-      });
-      stream.on('end', () => {
-        const buf = Buffer.concat(chunks);
-        resolve(buf.toString('utf8'));
-      });
-      stream.on('error', (err: Error) => {
-        const timeout = 200 * repeat ** 2;
+      const stream: NodeJS.ReadableStream = ssr(req.url);
+      const onReadable = () => {
+        readable = true;
+        stream.pipe(htmlStream);
+      };
+      const onEnd = () => {
+        // inject routeDataMapCache
+        const data = `<script>window.__ROUTE_DATA_MAP_CACHE__=${JSON.stringify(routeDataMapCache)}</script>`;
+        Readable.from(data).pipe(dataStream);
+      };
+      stream.once('readable', onReadable);
+      stream.once('end', onEnd);
+      stream.once('error', (err: Error) => {
         console.log('error while ssr', err.message);
-        if (chunks.length === 0 && /not yet support lazy-loaded|invariant=295/.test(err.message)) {
+        if (!readable && /not yet support lazy-loaded|invariant=295/.test(err.message)) {
+          const timeout = 200 * repeat ** 2;
           // HACK until react-dom/server supports lazy and suspense
           console.log('retrying in', timeout, 'ms...');
-          setTimeout(() => {
-            loop(repeat + 1);
-          }, timeout);
+          setTimeout(() => loop(repeat + 1), timeout);
         } else {
-          reject(err);
+          htmlStream.destroy(err);
         }
       });
     };
     loop(0);
-  });
+    return [htmlStream, dataStream];
+  };
 
-  // inject routeDataMapCache
-  jsAssets = `<script>window.__ROUTE_DATA_MAP_CACHE__=${JSON.stringify(routeDataMapCache)}</script>${jsAssets}`;
-  // clear routeDataMapCache (for the future)
-  Object.keys(routeDataMapCache).forEach((key) => {
-    delete routeDataMapCache[key as keyof typeof routeDataMapCache];
-  });
-
-  let body = fs.readFileSync(template, 'utf8');
-  body = body.replace('<div id="app"></div>', `<div id="app">${appHtml}</div>`);
-  body = body.replace('</body>', `${jsAssets}</body>`);
-
-  res.send(body);
+  const [htmlStream, dataStream] = getAppStream();
+  const stream = concatStreams([
+    Readable.from(templateChunks[0]),
+    Readable.from(templateChunks[1]), // <div id="app">
+    htmlStream,
+    Readable.from(templateChunks[2]),
+    dataStream,
+    Readable.from(jsAssets),
+    Readable.from(templateChunks[3]), // </body>
+    Readable.from(templateChunks[4]),
+  ]);
+  res.type('html');
+  stream.pipe(res);
 });
 
 app.use(express.static(`./examples/${DIR}/public`));
