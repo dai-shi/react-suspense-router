@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [1.0.0-alpha.6] - 2020-02-13
 ### Changed
 - Improve SSR example with Stream
 - Rename LazyFetcher to FetchDataLazy [BREAKING CHANGE]
