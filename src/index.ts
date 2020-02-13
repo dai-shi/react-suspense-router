@@ -48,7 +48,7 @@ export { StaticRouter } from './StaticRouter';
  *
  * Its usage is the same with react-router,
  * except that Route accepts `fetchData` prop.
- * Specify a result created by LazyFetcher.
+ * Specify a function created by FetchData or FetchDataLazy.
  *
  * @example
  * import { Routes, Route } from 'react-suspense-router';
@@ -67,21 +67,42 @@ export { Routes } from './Routes';
  *
  * Its usage is the same with react-router,
  * except that Route accepts `fetchData` prop.
- * Specify a result created by LazyFetcher.
+ * Specify a function created by FetchData or FetchDataLazy.
  */
 export { useRoutes } from './Routes';
 
 /**
- * LazyFetcher
+ * FetchData
  *
- * This will be used like React.lazy, but for route data.
+ * This will wrap an async function and create `fetchData`
+ * that canbe passed to `fetchData` prop in <Route>.
  *
  * @example
- * import { LazyFetcher } from 'react-suspense-router';
+ * import { FetchData, Route } from 'react-suspense-router';
  *
- * const fetchUserData = LazyFetcher(() => import('./pages/User.data'));
+ * const fetchDouble = FetchData(async (match) => {
+ *   await sleep(1000);
+ *   return { result: match.params.number * 2 };
+ * });
+ *
+ * <Route path="..." element={...} fetchData={fetchDouble} />
  */
-export { LazyFetcher } from './LazyFetcher';
+export { FetchData } from './FetchData';
+
+/**
+ * FetchDataLazy
+ *
+ * This is lazy loading version of FetchData.
+ * It will be used like React.lazy, but for route data.
+ *
+ * @example
+ * import { FetchDataLazy, Route } from 'react-suspense-router';
+ *
+ * const fetchUserData = FetchDataLazy(() => import('./pages/User.data'));
+ *
+ * <Route path="..." element={...} fetchData={fetchUserData} />
+ */
+export { FetchDataLazy } from './FetchData';
 
 /**
  * useRouteData hook

@@ -1,13 +1,12 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 
-import { prefetch } from 'react-suspense-fetch';
-
 import {
   BrowserRouter,
   Routes,
   Route,
   Link,
+  FetchData,
   useParams,
   useRouteData,
   usePending,
@@ -15,10 +14,10 @@ import {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const fetchDouble = (match) => prefetch(async (number) => {
+const fetchDouble = FetchData(async (match) => {
   await sleep(1000);
-  return { result: number * 2 };
-}, match.params.number);
+  return { result: match.params.number * 2 };
+});
 
 const Double = () => {
   const { number } = useParams();

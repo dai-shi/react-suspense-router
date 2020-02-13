@@ -78,11 +78,11 @@ Routes.tsx
 ```tsx
 import React from 'react';
 
-import { Route, Routes, LazyFetcher } from 'react-suspense-router';
+import { Route, Routes, FetchDataLazy } from 'react-suspense-router';
 
 const Index = React.lazy(() => import('./pages/Index'));
 const User = React.lazy(() => import('./pages/User'));
-const fetchUserData = LazyFetcher(() => import('./pages/User.data'));
+const fetchUserData = FetchDataLazy(() => import('./pages/User.data'));
 
 const MyRoutes: React.FC = () => (
   <Routes>
@@ -181,7 +181,7 @@ Routes for Suspense Render-as-You-Fetch
 
 Its usage is the same with react-router,
 except that Route accepts `fetchData` prop.
-Specify a result created by LazyFetcher.
+Specify a function created by FetchData or FetchDataLazy.
 
 #### Examples
 
@@ -202,20 +202,43 @@ useRoutes for Suspense Render-as-You-Fetch
 
 Its usage is the same with react-router,
 except that Route accepts `fetchData` prop.
-Specify a result created by LazyFetcher.
+Specify a function created by FetchData or FetchDataLazy.
 
-### LazyFetcher
+### FetchData
 
-LazyFetcher
+FetchData
 
-This will be used like React.lazy, but for route data.
+This will wrap an async function and create `fetchData`
+that canbe passed to `fetchData` prop in <Route>.
 
 #### Examples
 
 ```javascript
-import { LazyFetcher } from 'react-suspense-router';
+import { FetchData, Route } from 'react-suspense-router';
 
-const fetchUserData = LazyFetcher(() => import('./pages/User.data'));
+const fetchDouble = FetchData(async (match) => {
+  await sleep(1000);
+  return { result: match.params.number * 2 };
+});
+
+<Route path="..." element={...} fetchData={fetchDouble} />
+```
+
+### FetchDataLazy
+
+FetchDataLazy
+
+This is lazy loading version of FetchData.
+It will be used like React.lazy, but for route data.
+
+#### Examples
+
+```javascript
+import { FetchDataLazy, Route } from 'react-suspense-router';
+
+const fetchUserData = FetchDataLazy(() => import('./pages/User.data'));
+
+<Route path="..." element={...} fetchData={fetchUserData} />
 ```
 
 ### useRouteData

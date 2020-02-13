@@ -4,11 +4,11 @@ import {
   Link,
   Routes,
   Route,
-  LazyFetcher,
+  FetchDataLazy,
 } from 'react-suspense-router';
 
 const Post = React.lazy(() => import('./Post'));
-const fetchPostData = LazyFetcher(() => import('./Post.data'));
+const fetchPostData = FetchDataLazy(() => import('./Post.data'));
 
 const About: React.FC = () => (
   <div>

@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { Routes, Route, LazyFetcher } from 'react-suspense-router';
+import { Routes, Route, FetchDataLazy } from 'react-suspense-router';
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const Index = React.lazy(() => import('./pages/Index'));
 const About = React.lazy(() => import('./pages/About'));
 const User = React.lazy(async () => { await sleep(1000); return import('./pages/User'); });
-const fetchUserData = LazyFetcher(() => import('./pages/User.data'));
+const fetchUserData = FetchDataLazy(() => import('./pages/User.data'));
 
 const MyRoutes: React.FC = () => (
   <Routes>
