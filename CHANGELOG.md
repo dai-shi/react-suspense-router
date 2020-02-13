@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Improve SSR example with Stream
 
 ## [1.0.0-alpha.5] - 2020-02-11
 ### Changed
