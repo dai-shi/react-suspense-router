@@ -76,7 +76,7 @@ const app = express();
 
 app.use(instance);
 
-app.use(async (req, res) => {
+app.use((req, res) => {
   const {
     assetsByChunkName,
     outputPath,
