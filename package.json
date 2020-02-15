@@ -21,7 +21,7 @@
     "compile": "microbundle build --format cjs,es,umd --jsx React.createElement --globals react-router=ReactRouter,react-router-dom=ReactRouterDOM",
     "test": "run-s eslint tsc-test jest",
     "eslint": "eslint --ext .js,.ts,.tsx --ignore-pattern dist .",
-    "jest": "jest",
+    "jest": "jest --config '{\"preset\":\"ts-jest/presets/js-with-ts\"}' __tests__/*.ts",
     "tsc-test": "tsc --project . --noEmit",
     "server": "ts-node -O '{\"module\":\"commonjs\"}' ./examples/server.ts",
     "apidoc": "documentation readme --section API --markdown-toc false --parse-extension ts src/index.ts",
