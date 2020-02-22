@@ -39,6 +39,9 @@ const compiler = webpack({
     libraryTarget: 'var',
     library: outputLibraryEntry,
   },
+  node: {
+    fs: 'empty',
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template,

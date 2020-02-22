@@ -10,6 +10,9 @@ module.exports = {
   output: {
     publicPath: '/',
   },
+  node: {
+    fs: 'empty',
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: `./examples/${DIR}/public/index.html`,
