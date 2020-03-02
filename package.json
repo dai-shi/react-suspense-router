@@ -40,8 +40,8 @@
   "dependencies": {
     "react-router": "npm:@daishi/react-router@^6.0.0-alpha.2.lib.1",
     "react-router-dom": "^6.0.0-alpha.2",
-    "react-suspense-fetch": "^0.2.0",
-    "react-tracked": "^1.1.1"
+    "react-suspense-fetch": "^0.2.1",
+    "react-tracked": "^1.2.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
@@ -75,12 +75,12 @@
     "ts-loader": "^6.2.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.3",
-    "webpack": "^4.41.6",
+    "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-middleware": "^3.7.2",
     "webpack-dev-server": "^3.10.3"
   },
   "peerDependencies": {
-    "react": "experimental"
+    "react": ">=16.8.0"
   }
 }
