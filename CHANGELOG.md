@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.0.0-alpha.8] - 2020-03-07
+### Changed
+- Update React Tracked v1.3.0 with a fix
+
 ## [1.0.0-alpha.7] - 2020-02-22
 ### Changed
 - Update based on react-router v6.0.0-alpha.2
