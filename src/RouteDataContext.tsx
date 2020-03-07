@@ -1,20 +1,40 @@
 /* eslint camelcase: off */
 /* eslint @typescript-eslint/camelcase: off */
 
+import React, { useEffect } from 'react';
 import { createContainer } from 'react-tracked';
 
 const passDataProp = ({ data }: { data: object }) => [
   data,
-  null, // we don't use useUpdate
+  () => null, // dummy update function, only used to notify updates
 ] as const;
 
 const {
   Provider,
+  useUpdate,
   useTrackedState,
   useSelector,
 } = createContainer(passDataProp);
 
-export const RouteDataProvider = Provider;
+const SetNotify: React.FC<{
+  setNotify: (notify: () => void) => void;
+}> = ({ setNotify }) => {
+  const notify = useUpdate();
+  useEffect(() => {
+    setNotify(notify);
+  });
+  return null;
+};
+
+export const RouteDataProvider: React.FC<{
+  data: object;
+  setNotify: (notify: () => void) => void;
+}> = ({ data, setNotify, children }) => (
+  <Provider data={data}>
+    <SetNotify setNotify={setNotify} />
+    {children}
+  </Provider>
+);
 
 type UseTrackedState = <State>(opts: {
   unstable_ignoreStateEquality?: boolean;

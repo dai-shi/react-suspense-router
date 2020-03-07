@@ -34,19 +34,26 @@ const useBasename = (basenameOrig: string) => {
 };
 
 type RouteDataMap = { [path: string]: object };
+type RouteNotifyMap = Map<string, () => void>;
 
 const attachRouteData = (
   routesOrig: Route[],
   routeDataMap: RouteDataMap,
+  routeNotifyMap?: RouteNotifyMap,
 ) => routesOrig.map((route) => {
   if (!hasRouteElement(route)) return route;
   const { fetchData } = route.element.props;
   if (!fetchData) return route;
   const routeData = routeDataMap[route.path];
+  const setNotify = (notify: () => void) => {
+    if (routeNotifyMap) {
+      routeNotifyMap.set(route.path, notify);
+    }
+  };
   return {
     ...route,
     element: routeData && (
-      <RouteDataProvider data={routeData} children={route.element} />
+      <RouteDataProvider data={routeData} setNotify={setNotify} children={route.element} />
     ),
   };
 });
@@ -138,6 +145,7 @@ export const useRoutes = isSsr ? useRoutesSsr : (
   const [routeDataMap, setRouteDataMap] = useState<RouteDataMap>(
     () => getCachedRouteDataMap(basename),
   );
+  const routeNotifyMap = useRef<RouteNotifyMap>(new Map());
 
   const ref = useRef<{
     routesOrig: Route[];
@@ -176,11 +184,15 @@ export const useRoutes = isSsr ? useRoutesSsr : (
         }
         return map;
       });
+      Object.keys(map).forEach((path) => {
+        const notify = routeNotifyMap.current.get(path);
+        if (notify) notify();
+      });
     });
     return unlisten;
   }, [listen]);
 
-  const routes = attachRouteData(routesOrig, routeDataMap);
+  const routes = attachRouteData(routesOrig, routeDataMap, routeNotifyMap.current);
   return useRoutesOrig(routes, basenameOrig, caseSensitive);
 };
 
