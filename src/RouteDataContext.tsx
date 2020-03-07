@@ -4,9 +4,11 @@
 import React, { useEffect } from 'react';
 import { createContainer } from 'react-tracked';
 
+const noop = () => null;
+
 const passDataProp = ({ data }: { data: object }) => [
   data,
-  () => null, // dummy update function, only used to notify updates
+  noop, // dummy update function, only used to notify updates
 ] as const;
 
 const {

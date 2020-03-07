@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.0.0-alpha.9] - 2020-03-07
+### Changed
+- Fix: Stable noop function in RouteDataContext
+
 ## [1.0.0-alpha.8] - 2020-03-07
 ### Changed
 - Update React Tracked v1.3.0 with a fix
