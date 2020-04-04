@@ -1,10 +1,9 @@
 export {
-  Router,
   MemoryRouter,
   Navigate,
   Outlet,
-  Redirect,
   Route,
+  Router,
   createRoutesFromChildren,
   generatePath,
   matchRoutes,
@@ -30,6 +29,7 @@ export {
   NavLink,
   Prompt,
   usePrompt,
+  useSearchParams,
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
 } from 'react-router-dom';
