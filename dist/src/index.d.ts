@@ -1,5 +1,5 @@
-export { Router, MemoryRouter, Navigate, Outlet, Redirect, Route, createRoutesFromChildren, generatePath, matchRoutes, resolveLocation, useBlocker, useHref, useLocation, useMatch, useNavigate, useOutlet, useParams, useResolvedLocation, usePending, } from 'react-router';
-export { BrowserRouter, HashRouter, Link, NavLink, Prompt, usePrompt, } from 'react-router-dom';
+export { MemoryRouter, Navigate, Outlet, Route, Router, createRoutesFromChildren, generatePath, matchRoutes, resolveLocation, useBlocker, useHref, useLocation, useMatch, useNavigate, useOutlet, useParams, useResolvedLocation, usePending, } from 'react-router';
+export { BrowserRouter, HashRouter, Link, NavLink, Prompt, usePrompt, useSearchParams, } from 'react-router-dom';
 export { StaticRouter, } from 'react-router-dom/server';
 /**
  * Routes for Suspense Render-as-You-Fetch
