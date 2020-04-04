@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.0.0-alpha.10] - 2020-04-04
+### Changed
+- Update based on react-router v6.0.0-alpha.3
+
 ## [1.0.0-alpha.9] - 2020-03-07
 ### Changed
 - Fix: Stable noop function in RouteDataContext
