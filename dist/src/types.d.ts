@@ -1,20 +1,8 @@
-import { ReactElement, ReactNode } from 'react';
-declare type RouteWithElement = {
-    path: string;
+import { ReactElement } from 'react';
+import { RouteMatch, PartialRouteObject, RouteObject } from 'react-router';
+export declare type Match = Omit<RouteMatch, 'route'>;
+declare type RouteWithElement = RouteObject & {
     element: ReactElement;
-    children: ReactNode;
 };
-declare type RouteWithRedirectTo = {
-    path: string;
-    redirectTo: string;
-};
-export declare type Route = RouteWithElement | RouteWithRedirectTo;
-export declare const hasRouteElement: (route: Route) => route is RouteWithElement;
-export declare type match<Params extends {
-    [K in keyof Params]?: string;
-} = {}> = {
-    params: Params;
-    pathname: string;
-};
-export declare type Location = any;
+export declare const hasRouteElement: (route: PartialRouteObject) => route is RouteWithElement;
 export {};
