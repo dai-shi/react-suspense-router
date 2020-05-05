@@ -1,25 +1,34 @@
+import { ComponentType } from 'react';
+import {
+  Route as RouteOrig,
+  RouteProps,
+} from 'react-router';
+
 export {
+  // components
   MemoryRouter,
   Navigate,
   Outlet,
-  Route,
   Router,
-  createRoutesFromChildren,
-  generatePath,
-  matchRoutes,
-  resolveLocation,
+  // hooks
   useBlocker,
   useHref,
+  useInRouterContext,
   useLocation,
+  useLocationPending,
+  useLocationListen,
   useMatch,
   useNavigate,
   useOutlet,
   useParams,
   useResolvedLocation,
-
-  usePending, // by fork
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
+  // utils
+  createRoutesFromArray,
+  createRoutesFromChildren,
+  generatePath,
+  matchRoutes,
+  matchPath,
+  resolveLocation,
 } from 'react-router';
 
 export {
@@ -30,15 +39,14 @@ export {
   Prompt,
   usePrompt,
   useSearchParams,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
+  createSearchParams,
 } from 'react-router-dom';
 
 export {
   StaticRouter,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
 } from 'react-router-dom/server';
+
+export const Route = RouteOrig as ComponentType<RouteProps & { fetchData?: Function }>;
 
 /**
  * Routes for Suspense Render-as-You-Fetch
@@ -136,4 +144,4 @@ export { useRouteData } from './RouteDataContext';
 export { useRouteDataSelector } from './RouteDataContext';
 
 // types
-export { match } from './types';
+export { Match } from './types';
