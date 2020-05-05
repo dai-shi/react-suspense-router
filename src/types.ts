@@ -1,26 +1,14 @@
-import { ReactElement, ReactNode } from 'react';
+import { isValidElement, ReactElement } from 'react';
+import { RouteMatch, PartialRouteObject, RouteObject } from 'react-router';
 
-type RouteWithElement = {
-  path: string;
+export type Match = Omit<RouteMatch, 'route'>;
+
+type RouteWithElement = RouteObject & {
   element: ReactElement;
-  children: ReactNode;
 };
 
-type RouteWithRedirectTo = {
-  path: string;
-  redirectTo: string;
-};
-
-export type Route = RouteWithElement | RouteWithRedirectTo;
-
-export const hasRouteElement = (route: Route): route is RouteWithElement => (
-  !!(route as RouteWithElement).element
+export const hasRouteElement = (
+  route: PartialRouteObject,
+): route is RouteWithElement => (
+  isValidElement((route as RouteWithElement).element)
 );
-
-export type match<Params extends { [K in keyof Params]?: string } = {}> = {
-  params: Params;
-  pathname: string;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Location = any;

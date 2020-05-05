@@ -1,6 +1,11 @@
-export { MemoryRouter, Navigate, Outlet, Route, Router, createRoutesFromChildren, generatePath, matchRoutes, resolveLocation, useBlocker, useHref, useLocation, useMatch, useNavigate, useOutlet, useParams, useResolvedLocation, usePending, } from 'react-router';
-export { BrowserRouter, HashRouter, Link, NavLink, Prompt, usePrompt, useSearchParams, } from 'react-router-dom';
+import { ComponentType } from 'react';
+import { RouteProps } from 'react-router';
+export { MemoryRouter, Navigate, Outlet, Router, useBlocker, useHref, useInRouterContext, useLocation, useLocationPending, useLocationListen, useMatch, useNavigate, useOutlet, useParams, useResolvedLocation, createRoutesFromArray, createRoutesFromChildren, generatePath, matchRoutes, matchPath, resolveLocation, } from 'react-router';
+export { BrowserRouter, HashRouter, Link, NavLink, Prompt, usePrompt, useSearchParams, createSearchParams, } from 'react-router-dom';
 export { StaticRouter, } from 'react-router-dom/server';
+export declare const Route: ComponentType<RouteProps & {
+    fetchData?: Function | undefined;
+}>;
 /**
  * Routes for Suspense Render-as-You-Fetch
  *
@@ -90,4 +95,4 @@ export { useRouteData } from './RouteDataContext';
  * };
  */
 export { useRouteDataSelector } from './RouteDataContext';
-export { match } from './types';
+export { Match } from './types';

@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { Link, usePending } from 'react-suspense-router';
+import { Link, useLocationPending } from 'react-suspense-router';
 
 const Nav: React.FC = () => {
-  const isPending = usePending();
+  const isPending = useLocationPending();
   return (
     <div>
       <div style={{ position: 'absolute', top: 0 }}>{isPending && 'Pending...'}</div>

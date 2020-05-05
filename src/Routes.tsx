@@ -1,28 +1,28 @@
 /* eslint react/no-children-prop: off */
 
 import React, { useEffect, useState, useRef } from 'react';
+import { Location } from 'history';
 import {
   useParams,
   useResolvedLocation,
   createRoutesFromChildren,
   useRoutes as useRoutesOrig,
-  useListen, // by fork
+  useLocationListen, // by fork
   useLocation,
   matchRoutes,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
+  RouteMatch,
+  PartialRouteObject,
+  RouteObject,
+  createRoutesFromArray,
 } from 'react-router';
 
-import {
-  Route,
-  hasRouteElement,
-  match as Match,
-  Location,
-} from './types';
 import { RouteDataProvider } from './RouteDataContext';
 
+import { hasRouteElement, Match } from './types';
+
+
 // HACK because RouteContext is not exported.
-const EMPTY_PATHNAME = { pathname: null };
+const EMPTY_PATHNAME = { pathname: undefined };
 const usePathname = () => useResolvedLocation(EMPTY_PATHNAME).pathname;
 
 const useBasename = (basenameOrig: string) => {
@@ -37,13 +37,13 @@ type RouteDataMap = { [path: string]: object };
 type RouteNotifyMap = Map<string, () => void>;
 
 const attachRouteData = (
-  routesOrig: Route[],
+  routesOrig: RouteObject[],
   routeDataMap: RouteDataMap,
   routeNotifyMap?: RouteNotifyMap,
 ) => routesOrig.map((route) => {
   if (!hasRouteElement(route)) return route;
-  const { fetchData } = route.element.props;
-  if (!fetchData) return route;
+  const { fetchData } = route.element.props as { fetchData: unknown };
+  if (typeof fetchData !== 'function') return route;
   const routeData = routeDataMap[route.path];
   const setNotify = (notify: () => void) => {
     if (routeNotifyMap) {
@@ -59,15 +59,15 @@ const attachRouteData = (
 });
 
 const createRouteDataMap = (
-  matches: (Match & { route?: Route })[],
+  matches: RouteMatch[] | null,
   parentParams: { [key: string]: string },
 ) => {
   const map: RouteDataMap = {};
-  (matches || []).forEach((match: Match & { route?: Route }) => {
+  (matches || []).forEach((match: RouteMatch) => {
     const { params, pathname, route } = match;
     if (!route || !hasRouteElement(route)) return;
-    const { fetchData } = route.element.props;
-    if (!fetchData) return;
+    const { fetchData } = route.element.props as { fetchData: unknown };
+    if (typeof fetchData !== 'function') return;
     const m: Match = {
       params: { ...parentParams, ...params },
       pathname,
@@ -115,30 +115,30 @@ const isSsr = (
 );
 
 const useRoutesSsr = (
-  routesOrig: Route[],
+  partialRoutesOrig: PartialRouteObject[],
   basenameOrig = '',
-  caseSensitive = false,
 ) => {
+  const routesOrig = createRoutesFromArray(partialRoutesOrig);
   const basename = useBasename(basenameOrig);
   const parentParams = useParams();
 
   const location = useLocation();
-  const matches = matchRoutes(routesOrig, location, basename, caseSensitive);
+  const matches = matchRoutes(routesOrig, location, basename);
   const routeDataMap = getCachedRouteDataMap(basename);
   if (Object.keys(routeDataMap).length === 0) {
     Object.assign(routeDataMap, createRouteDataMap(matches, parentParams));
   }
 
   const routes = attachRouteData(routesOrig, routeDataMap);
-  return useRoutesOrig(routes, basenameOrig, caseSensitive);
+  return useRoutesOrig(routes, basenameOrig);
 };
 
 export const useRoutes = isSsr ? useRoutesSsr : (
-  routesOrig: Route[],
+  partialRoutesOrig: PartialRouteObject[],
   basenameOrig = '',
-  caseSensitive = false,
 ) => {
-  const listen = useListen();
+  const routesOrig = createRoutesFromArray(partialRoutesOrig);
+  const listen = useLocationListen();
   const basename = useBasename(basenameOrig);
   const parentParams = useParams();
 
@@ -148,9 +148,8 @@ export const useRoutes = isSsr ? useRoutesSsr : (
   const routeNotifyMap = useRef<RouteNotifyMap>(new Map());
 
   const ref = useRef<{
-    routesOrig: Route[];
+    routesOrig: RouteObject[];
     basename: string;
-    caseSensitive: boolean;
     parentParams: { [key: string]: string };
   }>();
   // Should we useLayoutEffect here?
@@ -158,7 +157,6 @@ export const useRoutes = isSsr ? useRoutesSsr : (
     ref.current = {
       routesOrig,
       basename,
-      caseSensitive,
       parentParams,
     };
   });
@@ -171,10 +169,9 @@ export const useRoutes = isSsr ? useRoutesSsr : (
         return;
       }
       const matches = matchRoutes(
-        ref.current?.routesOrig,
+        ref.current?.routesOrig || [],
         location,
         ref.current?.basename,
-        ref.current?.caseSensitive,
       );
       map = createRouteDataMap(matches || [], ref.current?.parentParams || {});
       setRouteDataMap((prev) => {
@@ -193,19 +190,17 @@ export const useRoutes = isSsr ? useRoutesSsr : (
   }, [listen]);
 
   const routes = attachRouteData(routesOrig, routeDataMap, routeNotifyMap.current);
-  return useRoutesOrig(routes, basenameOrig, caseSensitive);
+  return useRoutesOrig(routes, basenameOrig);
 };
 
 type Props = {
   basename?: string;
-  caseSensitive?: boolean;
 };
 
 export const Routes: React.FC<Props> = ({
   basename = '',
-  caseSensitive = false,
   children,
 }) => {
   const routes = createRoutesFromChildren(children);
-  return useRoutes(routes, basename, caseSensitive);
+  return useRoutes(routes, basename);
 };

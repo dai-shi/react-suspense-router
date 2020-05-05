@@ -1,4 +1,4 @@
-import { match as Match } from 'react-suspense-router';
+import { Match } from 'react-suspense-router';
 
 export type PostData = {
   id: number;
@@ -7,7 +7,7 @@ export type PostData = {
   body: string;
 };
 
-const fetchPostData = async (match: Match<{ postId?: string }>) => {
+const fetchPostData = async (match: Match) => {
   const { postId } = match.params;
   const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`);
   const data = await response.json();

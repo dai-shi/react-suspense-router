@@ -9,7 +9,7 @@ import {
   FetchData,
   useParams,
   useRouteData,
-  usePending,
+  useLocationPending,
 } from 'react-suspense-router';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -44,7 +44,7 @@ const MyRoutes = () => (
 );
 
 const Nav = () => {
-  const isPending = usePending();
+  const isPending = useLocationPending();
   return (
     <div>
       <div style={{ position: 'absolute', top: 0 }}>{isPending && 'Pending...'}</div>
