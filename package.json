@@ -28,7 +28,7 @@
     "examples:01_minimal": "DIR=01_minimal EXT=js webpack-dev-server",
     "examples:02_typescript": "DIR=02_typescript EXT=tsx webpack-dev-server",
     "examples:03_nesting": "DIR=03_nesting webpack-dev-server",
-    "examples:server:02_typescript": "DIR=02_typescript EXT=tsx run-s server"
+    "broken_examples:server:02_typescript": "DIR=02_typescript EXT=tsx run-s server"
   },
   "keywords": [
     "react",

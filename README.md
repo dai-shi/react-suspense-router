@@ -48,10 +48,10 @@ Nav.tsx
 ```tsx
 import React from 'react';
 
-import { Link, usePending } from 'react-suspense-router';
+import { Link, useLocationPending } from 'react-suspense-router';
 
 const Nav: React.FC = () => {
-  const isPending = usePending();
+  const isPending = useLocationPending();
   return (
     <div>
       <div style={{ position: 'absolute', top: 0 }}>{isPending && 'Pending...'}</div>
@@ -149,7 +149,7 @@ export default User;
 pages/User.data.ts
 
 ```ts
-import { match as Match } from 'react-suspense-router';
+import { Match } from 'react-suspense-router';
 
 export type UserData = {
   data: {
@@ -161,7 +161,7 @@ export type UserData = {
   };
 };
 
-const fetchUserData = async (match: Match<{ uid?: string }>) => {
+const fetchUserData = async (match: Match) => {
   const userId = match.params.uid;
   const response = await fetch(`https://reqres.in/api/users/${userId}`);
   const data = await response.json();
