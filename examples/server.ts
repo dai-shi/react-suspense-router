@@ -46,7 +46,7 @@ const compiler = webpack({
     new HtmlWebpackPlugin({
       template,
       excludeChunks: ['ssr'],
-    }),
+    }) as any /* FIXME */,
   ],
   module: {
     rules: [{
@@ -70,7 +70,7 @@ const compiler = webpack({
   },
 });
 
-const instance = middleware(compiler, {
+const instance = middleware(compiler as any /* FIXME */, {
   publicPath,
   serverSideRender: true,
 });

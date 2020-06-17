@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "experimental",
-    "react-dom": "experimental",
+    "react": "0.0.0-experimental-e5d06e34b",
+    "react-dom": "0.0.0-experimental-e5d06e34b",
     "react-suspense-router": "latest",
     "react-scripts": "latest"
   },

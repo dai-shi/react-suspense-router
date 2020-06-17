@@ -20,7 +20,6 @@ import { RouteDataProvider } from './RouteDataContext';
 
 import { hasRouteElement, Match } from './types';
 
-
 // HACK because RouteContext is not exported.
 const EMPTY_PATHNAME = { pathname: undefined };
 const usePathname = () => useResolvedLocation(EMPTY_PATHNAME).pathname;
