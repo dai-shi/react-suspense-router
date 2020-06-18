@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [1.0.0-alpha.12] - 2020-06-18
+### Changed
+- Fix react experimental version for now
+
+## [1.0.0-alpha.11] - 2020-05-05
+### Changed
+- Update based on react-router v6.0.0-alpha.4
+
 ## [1.0.0-alpha.10] - 2020-04-04
 ### Changed
 - Update based on react-router v6.0.0-alpha.3
